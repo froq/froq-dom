@@ -45,4 +45,8 @@ final /* static */ class Dom
     {
         return new XmlDocument($data);
     }
+
+    // move! /var/www/froq/froq-http-client/src/Util.php
+    public static function parseXml($xml, array $options = null)
+    {}
 }
