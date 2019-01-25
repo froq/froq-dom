@@ -33,7 +33,7 @@ namespace Froq\Dom;
  * @author     Kerem Güneş <k-gun@mail.com>
  * @since      3.0
  */
-/* abstract? */ class Document
+class Document
 {
     /**
      * Types.
@@ -87,7 +87,7 @@ namespace Froq\Dom;
      * To string magic.
      * @return string
      */
-    public function __toString()
+    public final function __toString()
     {
         return $this->toString();
     }
@@ -178,7 +178,7 @@ namespace Froq\Dom;
      * @param  string $indentString
      * @return string
      */
-    public function toString(bool $pretty = false, string $indentString = "\t"): string
+    public final function toString(bool $pretty = false, string $indentString = "\t"): string
     {
         $newLine = "\n";
         if (!$pretty) {
@@ -252,7 +252,7 @@ namespace Froq\Dom;
      * @param  ?int    $indentCount @internal
      * @return string
      */
-    private static function toNodeString(array $node, ?string $newLine, ?string $indentString,
+    private static final function toNodeString(array $node, ?string $newLine, ?string $indentString,
         ?int $indentCount): string
     {
         // [name value? @attributes? @nodes? @selfClosing?]
@@ -311,7 +311,7 @@ namespace Froq\Dom;
      * @param  array $attributes
      * @return string
      */
-    private static function toAttributeString(array $attributes): string
+    private static final function toAttributeString(array $attributes): string
     {
         $return = '';
 
