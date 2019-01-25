@@ -83,46 +83,90 @@ namespace Froq\Dom;
         $xmlEncoding && $this->setXmlEncoding($xmlEncoding);
     }
 
+    /**
+     * To string magic.
+     * @return string
+     */
     public function __toString()
     {
         return $this->toString();
     }
 
+    /**
+     * Set type.
+     * @param  string $type
+     * @return self
+     */
     public final function setType(string $type): self
     {
         $this->type = strtolower($type);
         return $this;
     }
+
+    /**
+     * Get type.
+     * @return ?string
+     */
     public final function getType(): ?string
     {
         return $this->type;
     }
 
+    /**
+     * Set data.
+     * @param  array $data
+     * @return self
+     */
     public final function setData(array $data): self
     {
         $this->data = $data;
         return $this;
     }
+
+    /**
+     * Get data.
+     * @return array
+     */
     public final function getData(): ?array
     {
         return $this->data;
     }
 
+    /**
+     * Set xml version.
+     * @param  string $xmlVersion
+     * @return self
+     */
     public final function setXmlVersion(string $xmlVersion): self
     {
         $this->xmlVersion = $xmlVersion;
         return $this;
     }
+
+    /**
+     * Get xml version.
+     * @return ?string
+     */
     public final function getXmlVersion(): ?string
     {
         return $this->xmlVersion;
     }
 
+    /**
+     * Set xml encoding.
+     * @param  string $xmlEncoding
+     * @return self
+     */
     public final function setXmlEncoding(string $xmlEncoding): self
     {
         $this->xmlEncoding = $xmlEncoding;
         return $this;
     }
+
+    /**
+     * Get xml encoding.
+     * @return ?string
+     */
     public final function getXmlEncoding(): ?string
     {
         return $this->xmlEncoding;
