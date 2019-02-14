@@ -10,8 +10,7 @@
     "require": {
         "php": "^7.2",
         "ext-dom": "*",
-        "ext-libxml": "*",
-        "froq/froq-exception": "^1.0"
+        "ext-libxml": "*"
     },
     "autoload": {
         "classmap": ["src/"]
