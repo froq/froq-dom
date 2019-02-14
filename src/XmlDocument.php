@@ -27,7 +27,7 @@ declare(strict_types=1);
 namespace froq\dom;
 
 /**
- * Xml Document.
+ * Xml document.
  * @package froq\dom
  * @object  froq\dom\XmlDocument
  * @author  Kerem Güneş <k-gun@mail.com>
