@@ -27,7 +27,7 @@ declare(strict_types=1);
 namespace froq\dom;
 
 /**
- * Dom Exception.
+ * Dom exception.
  * @package froq\dom
  * @object  froq\dom\DomException
  * @author  Kerem Güneş <k-gun@mail.com>
