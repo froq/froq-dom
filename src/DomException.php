@@ -24,14 +24,14 @@
  */
 declare(strict_types=1);
 
-namespace Froq\Dom;
+namespace froq\dom;
 
 /**
- * @package    Froq
- * @subpackage Froq\Dom
- * @object     Froq\Dom\DomException
- * @author     Kerem Güneş <k-gun@mail.com>
- * @since      3.0
+ * Dom Exception.
+ * @package froq\dom
+ * @object  froq\dom\DomException
+ * @author  Kerem Güneş <k-gun@mail.com>
+ * @since   3.0
  */
 final class DomException extends \Exception
 {}

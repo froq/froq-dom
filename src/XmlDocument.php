@@ -24,14 +24,14 @@
  */
 declare(strict_types=1);
 
-namespace Froq\Dom;
+namespace froq\dom;
 
 /**
- * @package    Froq
- * @subpackage Froq\Dom
- * @object     Froq\Dom\XmlDocument
- * @author     Kerem Güneş <k-gun@mail.com>
- * @since      3.0
+ * Xml Document.
+ * @package froq\dom
+ * @object  froq\dom\XmlDocument
+ * @author  Kerem Güneş <k-gun@mail.com>
+ * @since   3.0
  */
 final class XmlDocument extends Document
 {

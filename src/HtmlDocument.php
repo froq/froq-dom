@@ -24,14 +24,14 @@
  */
 declare(strict_types=1);
 
-namespace Froq\Dom;
+namespace froq\dom;
 
 /**
- * @package    Froq
- * @subpackage Froq\Dom
- * @object     Froq\Dom\HtmlDocument
- * @author     Kerem Güneş <k-gun@mail.com>
- * @since      3.0
+ * Html Document.
+ * @package froq\dom
+ * @object  froq\dom\HtmlDocument
+ * @author  Kerem Güneş <k-gun@mail.com>
+ * @since   3.0
  */
 final class HtmlDocument extends Document
 {

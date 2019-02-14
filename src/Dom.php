@@ -24,14 +24,14 @@
  */
 declare(strict_types=1);
 
-namespace Froq\Dom;
+namespace froq\dom;
 
 /**
- * @package    Froq
- * @subpackage Froq\Dom
- * @object     Froq\Dom\Dom
- * @author     Kerem Güneş <k-gun@mail.com>
- * @since      3.0
+ * Dom.
+ * @package froq\dom
+ * @object  froq\dom\Dom
+ * @author  Kerem Güneş <k-gun@mail.com>
+ * @since   3.0
  */
 final /* static */ class Dom
 {
@@ -49,7 +49,7 @@ final /* static */ class Dom
     /**
      * Create html document.
      * @param  array|null $data
-     * @return Froq\Dom\HtmlDocument
+     * @return froq\dom\HtmlDocument
      */
     public static function createHtmlDocument(array $data = null): HtmlDocument
     {
@@ -61,7 +61,7 @@ final /* static */ class Dom
      * @param  array|null $data
      * @param  string|null $version
      * @param  string|null $encoding
-     * @return Froq\Dom\XmlDocument
+     * @return froq\dom\XmlDocument
      */
     public static function createXmlDocument(array $data = null, string $version = null,
         string $encoding = null): XmlDocument
@@ -74,7 +74,7 @@ final /* static */ class Dom
      * @param  any  $xml
      * @param  array $options
      * @return any
-     * @throws Froq\Dom\DomException If $options['throwErrors'] is true.
+     * @throws froq\dom\DomException If $options['throwErrors'] is true.
      */
     public static function parseXml($xml, array $options = null)
     {

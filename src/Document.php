@@ -24,14 +24,14 @@
  */
 declare(strict_types=1);
 
-namespace Froq\Dom;
+namespace froq\dom;
 
 /**
- * @package    Froq
- * @subpackage Froq\Dom
- * @object     Froq\Dom\Document
- * @author     Kerem Güneş <k-gun@mail.com>
- * @since      3.0
+ * Document.
+ * @package froq\dom
+ * @object  froq\dom\Document
+ * @author  Kerem Güneş <k-gun@mail.com>
+ * @since   3.0
  */
 class Document
 {
@@ -100,6 +100,7 @@ class Document
     public final function setType(string $type): self
     {
         $this->type = strtolower($type);
+
         return $this;
     }
 
@@ -120,6 +121,7 @@ class Document
     public final function setData(array $data): self
     {
         $this->data = $data;
+
         return $this;
     }
 
@@ -140,6 +142,7 @@ class Document
     public final function setXmlVersion(string $xmlVersion): self
     {
         $this->xmlVersion = $xmlVersion;
+
         return $this;
     }
 
@@ -160,6 +163,7 @@ class Document
     public final function setXmlEncoding(string $xmlEncoding): self
     {
         $this->xmlEncoding = $xmlEncoding;
+
         return $this;
     }
 
