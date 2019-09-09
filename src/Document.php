@@ -74,8 +74,7 @@ class Document
      * @param string|null $xmlVersion
      * @param string|null $xmlEncoding
      */
-    public function __construct(string $type, array $data = null, string $xmlVersion = null,
-        string $xmlEncoding = null)
+    public function __construct(string $type, array $data = null, string $xmlVersion = null, string $xmlEncoding = null)
     {
         $this->setType($type);
         $data && $this->setData($data);
