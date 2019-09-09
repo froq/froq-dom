@@ -97,11 +97,10 @@ final /* static */ class Dom
             $error = libxml_get_last_error() ?: null;
             libxml_clear_errors();
 
-            if ($error) {
-                // god!
+            if ($error != null) {
                 $error->file = $error->file ?: 'n/a';
                 $error->message = trim($error->message);
-                if (!!$options['throwErrors']) {
+                if ($options['throwErrors']) {
                     throw new DomException(sprintf('Parse error (%s (level:%s code:%s column:%s'.
                         ' file:%s line:%s))', $error->message, $error->level, $error->code,
                         $error->column, $error->file, $error->line), $error->code);
