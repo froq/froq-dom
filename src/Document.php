@@ -178,14 +178,14 @@ class Document
 
     /**
      * To string.
-     * @param  bool   $pretty
+     * @param  bool   $indent
      * @param  string $indentString
      * @return string
      */
-    public final function toString(bool $pretty = false, string $indentString = "\t"): string
+    public final function toString(bool $indent = false, string $indentString = "\t"): string
     {
         $newLine = "\n";
-        if (!$pretty) {
+        if (!$indent) {
             $newLine = '';
             $indentString = '';
         }
