@@ -56,10 +56,16 @@ class Document
     protected $type;
 
     /**
-     * Xml version, encoding
+     * Xml version.
      * @var string
      */
-    protected $xmlVersion, $xmlEncoding;
+    protected $xmlVersion;
+
+    /**
+     * Xml encoding.
+     * @var string
+     */
+    protected $xmlEncoding;
 
     /**
      * Data.
@@ -217,7 +223,7 @@ class Document
 
         // add attributes
         if ($attributes != null) {
-            $return .= self::toAttributeString($attributes);
+            $return .= $this->toAttributeString($attributes);
         }
 
         if ($selfClosing) {
@@ -229,13 +235,13 @@ class Document
             if ($nodes != null) {
                 if ($newLine == '') {
                     foreach ($nodes as $node) {
-                        $return .= self::toNodeString($node, null, null, null);
+                        $return .= $this->toNodeString($node, null, null, null);
                     }
                 } else {
                     $return .= $newLine;
                     foreach ($nodes as $node) {
                         $return .= $indentString;
-                        $return .= self::toNodeString($node, $newLine, $indentString, 1);
+                        $return .= $this->toNodeString($node, $newLine, $indentString, 1);
                     }
                 }
             }
@@ -255,8 +261,7 @@ class Document
      * @param  ?int    $indentCount @internal
      * @return string
      */
-    private static final function toNodeString(array $node, ?string $newLine, ?string $indentString,
-        ?int $indentCount): string
+    private final function toNodeString(array $node, ?string $newLine, ?string $indentString, ?int $indentCount): string
     {
         // [name value? @attributes? @nodes? @selfClosing?]
         @ [$name, $value] = $node;
@@ -269,7 +274,7 @@ class Document
 
         // add attributes
         if ($attributes != null) {
-            $return .= self::toAttributeString($attributes);
+            $return .= $this->toAttributeString($attributes);
         }
 
         if ($selfClosing) {
@@ -283,11 +288,11 @@ class Document
                     ++$indentCount;
                     foreach ($nodes as $node) {
                         $return .= str_repeat($indentString, $indentCount);
-                        $return .= self::toNodeString($node, $newLine, $indentString, $indentCount);
+                        $return .= $this->toNodeString($node, $newLine, $indentString, $indentCount);
                     }
                 } else {
                     foreach ($nodes as $node) {
-                        $return .= self::toNodeString($node, $newLine, $indentString, $indentCount);
+                        $return .= $this->toNodeString($node, $newLine, $indentString, $indentCount);
                     }
                 }
             } elseif ($value !== null) {
@@ -314,11 +319,11 @@ class Document
      * @param  array $attributes
      * @return string
      */
-    private static final function toAttributeString(array $attributes): string
+    private final function toAttributeString(array $attributes): string
     {
         $return = '';
 
-        // http://www.w3.org/TR/2008/REC-xml-20081126/#NT-Name
+        // @see http://www.w3.org/TR/2008/REC-xml-20081126/#NT-Name
         $namePattern = '~^
             [a-zA-Z_]+(?:[a-zA-Z0-9-_]+)?(?:(?:[:]+)?[a-zA-Z0-9-_:]+)? # name(..)
           | [:][a-zA-Z0-9-_:]*                                         # name:(..)
@@ -330,10 +335,10 @@ class Document
                     "that matches with '{$namePattern}'");
             }
 
-            // @todo maybe done by regexp above?
-            if (strpbrk($name, '\'"=') !== false) {
+            static $notAllowedChars = '\'"=';
+            if (strpbrk($name, $notAllowedChars) !== false) {
                 throw new DomException("No valid attribute name '{$name}' given (tip: don't use these ".
-                    "characters in name [\",',=])");
+                    "characters `{$notAllowedChars}` in name)");
             }
 
             if (!is_scalar($value)) {

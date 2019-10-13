@@ -41,6 +41,6 @@ final class HtmlDocument extends Document
      */
     public function __construct(array $data = null)
     {
-        parent::__construct('html', $data);
+        parent::__construct(Document::TYPE_HTML, $data);
     }
 }

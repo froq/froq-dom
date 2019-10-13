@@ -36,17 +36,6 @@ namespace froq\dom;
 final /* static */ class Dom
 {
     /**
-     * Parse xml options.
-     * @var array
-     */
-    private static $parseXmlOptions = [
-        'preserveWhiteSpace' => false,
-        'validateOnParse' => false,
-        'strictErrorChecking' => false,
-        'throwErrors' => false
-    ];
-
-    /**
      * Create html document.
      * @param  array|null $data
      * @return froq\dom\HtmlDocument
@@ -59,14 +48,14 @@ final /* static */ class Dom
     /**
      * Create xml document.
      * @param  array|null $data
-     * @param  string|null $version
-     * @param  string|null $encoding
+     * @param  string|null $xmlVersion
+     * @param  string|null $xmlEncoding
      * @return froq\dom\XmlDocument
      */
-    public static function createXmlDocument(array $data = null, string $version = null,
-        string $encoding = null): XmlDocument
+    public static function createXmlDocument(array $data = null, string $xmlVersion = null,
+        string $xmlEncoding = null): XmlDocument
     {
-        return new XmlDocument($data, $version, $encoding);
+        return new XmlDocument($data, $xmlVersion, $xmlEncoding);
     }
 
     /**
@@ -82,28 +71,35 @@ final /* static */ class Dom
         static $error, $xmlProperties;
 
         if (is_string($root)) {
-            $options = array_merge(self::$parseXmlOptions, $options ?? []);
+            static $optionsDefault = [
+                'validateOnParse' => false, 'preserveWhiteSpace' => false,
+                'strictErrorChecking' => false, 'throwErrors' => false, 'flags' => 0
+            ];
+
+            ['validateOnParse' => $validateOnParse, 'preserveWhiteSpace' => $preserveWhiteSpace,
+             'strictErrorChecking' => $strictErrorChecking, 'throwErrors' => $throwErrors, 'flags' => $flags
+            ] = array_merge($optionsDefault, $options ?? []);
 
             $root = new \DOMDocument();
-            $root->preserveWhiteSpace = !!$options['preserveWhiteSpace'];
-            $root->validateOnParse = !!$options['validateOnParse'];
-            $root->strictErrorChecking = !!$options['strictErrorChecking'];
+            $root->validateOnParse = !!$validateOnParse;
+            $root->preserveWhiteSpace = !!$preserveWhiteSpace;
+            $root->strictErrorChecking = !!$strictErrorChecking;
 
             libxml_use_internal_errors(true);
-            $root->loadXml($xml, ((int) ($options['options'] ?? 0))
-                + LIBXML_NOERROR | LIBXML_NOWARNING | LIBXML_BIGLINES | LIBXML_COMPACT
-                    | LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+            $root->loadXml($xml, intval($flags) + (
+                LIBXML_NOERROR | LIBXML_NOWARNING | LIBXML_BIGLINES |
+                LIBXML_COMPACT | LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
+            ));
 
-            $error = libxml_get_last_error() ?: null;
-            libxml_clear_errors();
-
-            if ($error != null) {
+            $error = libxml_get_last_error();
+            if ($error) {
+                libxml_clear_errors();
                 $error->file = $error->file ?: 'n/a';
                 $error->message = trim($error->message);
-                if ($options['throwErrors']) {
-                    throw new DomException(sprintf('Parse error (%s (level:%s code:%s column:%s'.
-                        ' file:%s line:%s))', $error->message, $error->level, $error->code,
-                        $error->column, $error->file, $error->line), $error->code);
+                if ($throwErrors) {
+                    throw new DomException(sprintf('Parse error: %s (level:%s code:%s column:%s file:%s line:%s)',
+                        $error->message, $error->level, $error->code, $error->column, $error->file, $error->line
+                    ), $error->code);
                 }
             }
         }
@@ -116,7 +112,7 @@ final /* static */ class Dom
             if ($root->nodeType == XML_DOCUMENT_NODE) {
                 // add real root tag, not #document
                 $xmlProperties['@root'] = $root->firstChild->tagName ?? null;
-                $xmlProperties['@error'] = $error;
+                $xmlProperties['@error'] = $error ?: null;
                 $xmlProperties['version'] = $root->xmlVersion;
                 $xmlProperties['encoding'] = $root->xmlEncoding;
             }

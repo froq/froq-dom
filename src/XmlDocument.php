@@ -43,6 +43,6 @@ final class XmlDocument extends Document
      */
     public function __construct(array $data = null, string $xmlVersion = null, string $xmlEncoding = null)
     {
-        parent::__construct('xml', $data, $xmlVersion, $xmlEncoding);
+        parent::__construct(Document::TYPE_XML, $data, $xmlVersion, $xmlEncoding);
     }
 }
