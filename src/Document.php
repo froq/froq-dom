@@ -26,6 +26,8 @@ declare(strict_types=1);
 
 namespace froq\dom;
 
+use froq\interfaces\Stringable;
+
 /**
  * Document.
  * @package froq\dom
@@ -33,7 +35,7 @@ namespace froq\dom;
  * @author  Kerem Güneş <k-gun@mail.com>
  * @since   3.0
  */
-class Document
+class Document implements Stringable
 {
     /**
      * Types.
@@ -43,7 +45,7 @@ class Document
                  TYPE_HTML = 'html';
 
     /**
-     * Xml stuff.
+     * Xml version & encoding.
      * @const string
      */
     public const XML_VERSION  = '1.0',
@@ -53,25 +55,25 @@ class Document
      * Type.
      * @var string
      */
-    protected $type;
-
-    /**
-     * Xml version.
-     * @var string
-     */
-    protected $xmlVersion;
-
-    /**
-     * Xml encoding.
-     * @var string
-     */
-    protected $xmlEncoding;
+    protected string $type;
 
     /**
      * Data.
      * @var array
      */
-    protected $data;
+    protected array $data;
+
+    /**
+     * Xml version.
+     * @var string
+     */
+    protected string $xmlVersion;
+
+    /**
+     * Xml encoding.
+     * @var string
+     */
+    protected string $xmlEncoding;
 
     /**
      * Constructor.
@@ -80,21 +82,16 @@ class Document
      * @param string|null $xmlVersion
      * @param string|null $xmlEncoding
      */
-    public function __construct(string $type, array $data = null, string $xmlVersion = null, string $xmlEncoding = null)
+    public function __construct(string $type, array $data = null, string $xmlVersion = null,
+        string $xmlEncoding = null)
     {
         $this->setType($type);
-        $data && $this->setData($data);
-        $xmlVersion && $this->setXmlVersion($xmlVersion);
-        $xmlEncoding && $this->setXmlEncoding($xmlEncoding);
-    }
+        $this->setData($data ?? []);
 
-    /**
-     * To string magic.
-     * @return string
-     */
-    public final function __toString()
-    {
-        return $this->toString();
+        if ($type == self::TYPE_XML) {
+            $xmlVersion  && $this->setXmlVersion($xmlVersion ?? self::XML_VERSION);
+            $xmlEncoding && $this->setXmlEncoding($xmlEncoding ?? self::XML_ENCODING);
+        }
     }
 
     /**
@@ -111,9 +108,9 @@ class Document
 
     /**
      * Get type.
-     * @return ?string
+     * @return string
      */
-    public final function getType(): ?string
+    public final function getType(): string
     {
         return $this->type;
     }
@@ -134,7 +131,7 @@ class Document
      * Get data.
      * @return array
      */
-    public final function getData(): ?array
+    public final function getData(): array
     {
         return $this->data;
     }
@@ -157,7 +154,7 @@ class Document
      */
     public final function getXmlVersion(): ?string
     {
-        return $this->xmlVersion;
+        return ($this->xmlVersion ?? null);
     }
 
     /**
@@ -178,7 +175,7 @@ class Document
      */
     public final function getXmlEncoding(): ?string
     {
-        return $this->xmlEncoding;
+        return ($this->xmlEncoding ?? null);
     }
 
     /**
@@ -186,6 +183,7 @@ class Document
      * @param  bool   $indent
      * @param  string $indentString
      * @return string
+     * @throws froq\dom\DomException If no valid @root given in document data.
      */
     public final function toString(bool $indent = false, string $indentString = "\t"): string
     {
@@ -195,162 +193,185 @@ class Document
             $indentString = '';
         }
 
-        $return = '';
+        $ret = '';
 
         if ($this->type == self::TYPE_HTML) {
-            $return = "<!DOCTYPE html>{$newLine}";
+            $ret = "<!DOCTYPE html>{$newLine}";
         } elseif ($this->type == self::TYPE_XML) {
-            $return = "<?xml version=\"". ($this->xmlVersion ?: self::XML_VERSION) ."\"".
+            $ret = "<?xml version=\"". ($this->xmlVersion ?: self::XML_VERSION) ."\"".
                 " encoding=\"". ($this->xmlEncoding ?: self::XML_ENCODING) ."\"?>{$newLine}";
         }
-
-        $data = $this->data;
-        if (empty($data['@root'])) {
+        $root = $this->data['@root'] ?? null;
+        if ($root == null) {
             throw new DomException('No @root found in given document data');
         }
 
-        @ [$rootName, $rootValue] = $data['@root'];
+        // Eg: [name, content?, @nodes?, @attributes?, @selfClosing?].
+        @ [$rootName, $rootContent] = $root;
         if ($rootName == null) {
             throw new DomException('No @root tag found in given document data');
         }
 
-        $attributes = $data['@root']['@attributes'] ?? null;
-        $nodes = $data['@root']['@nodes'] ?? null;
-        $selfClosing = $data['@root']['@selfClosing'] ?? false; // not usual but valid
+        $nodes = $root['@nodes'] ?? null;
+        $attributes = $root['@attributes'] ?? null;
+        $selfClosing = $root['@selfClosing'] ?? false; // Not usual but valid.
 
-        // open root tag
-        $return .= "<{$rootName}";
+        // Open root tag.
+        $ret .= "<{$rootName}";
 
-        // add attributes
+        // Add attributes.
         if ($attributes != null) {
-            $return .= $this->toAttributeString($attributes);
+            $ret .= $this->generateAttributeString($attributes);
         }
 
         if ($selfClosing) {
-            $return .= " />{$newLine}"; // value and nodes discarded
+            $ret .= " />{$newLine}"; // Value and nodes discarded.
         } else {
-            $return .= ">";
+            $ret .= ">";
 
-            // add nodes
+            if ($rootContent !== null && $rootContent !== '') {
+                if (!is_scalar($rootContent)) {
+                    $rootContent = json_encode($rootContent);
+                }
+                // Escape (<,>).
+                $rootContent = str_replace(['<', '>'], ['&lt;', '&gt;'], $rootContent);
+
+                $ret .= $newLine . $indentString . $rootContent;
+                if ($nodes == null) {
+                    $ret .= $newLine;
+                }
+            }
+
+            // Add nodes.
             if ($nodes != null) {
                 if ($newLine == '') {
                     foreach ($nodes as $node) {
-                        $return .= $this->toNodeString($node, null, null, null);
+                        $ret .= $this->generateNodeString($node, '', '', 0);
                     }
                 } else {
-                    $return .= $newLine;
+                    $ret .= $newLine;
                     foreach ($nodes as $node) {
-                        $return .= $indentString;
-                        $return .= $this->toNodeString($node, $newLine, $indentString, 1);
+                        $ret .= $indentString;
+                        $ret .= $this->generateNodeString($node, $newLine, $indentString, 1);
                     }
                 }
             }
 
-            // close root tag
-            $return .= "</{$rootName}>{$newLine}";
+            // Close root tag.
+            $ret .= "</{$rootName}>{$newLine}";
         }
 
-        return $return;
+        return $ret;
     }
 
     /**
-     * To node string.
-     * @param  array   $node
-     * @param  ?string $newLine
-     * @param  ?string $indentString
-     * @param  ?int    $indentCount @internal
+     * Generate node string.
+     * @param  array  $node
+     * @param  string $newLine
+     * @param  string $indentString
+     * @param  int    $indentCount @internal
      * @return string
      */
-    private final function toNodeString(array $node, ?string $newLine, ?string $indentString, ?int $indentCount): string
+    private final function generateNodeString(array $node, string $newLine = '',
+        string $indentString = '', int $indentCount = 1): string
     {
-        // [name value? @attributes? @nodes? @selfClosing?]
-        @ [$name, $value] = $node;
-        $attributes = $node['@attributes'] ?? null;
+        // Eg: [name, content?, @nodes?, @attributes?, @selfClosing?].
+        @ [$name, $content] = $node;
         $nodes = $node['@nodes'] ?? null;
+        $attributes = $node['@attributes'] ?? null;
         $selfClosing = $node['@selfClosing'] ?? false;
 
-        // open tag
-        $return = "<{$name}";
+        // Open tag.
+        $ret = "<{$name}";
 
-        // add attributes
+        // Add attributes.
         if ($attributes != null) {
-            $return .= $this->toAttributeString($attributes);
+            $ret .= $this->generateAttributeString($attributes);
         }
 
         if ($selfClosing) {
-            $return .= " />{$newLine}"; // value and nodes discarded
+            $ret .= " />{$newLine}"; // Content and nodes discarded.
         } else {
-            $return .= ">";
-            $hasNodes = !empty($nodes);
-            if ($hasNodes) { // value discarded
+            $ret .= ">";
+
+            if ($content !== null && $content !== '') {
+                if (!is_scalar($content)) {
+                    $content = json_encode($content);
+                }
+                // Escape (<,>).
+                $content = str_replace(['<', '>'], ['&lt;', '&gt;'], $content);
+
+                if ($nodes == null) {
+                    $ret .= $content;
+                } else {
+                    $ret .= $newLine . str_repeat($indentString, $indentCount + 1) . $content;
+                }
+            }
+
+            if ($nodes != null) {
                 if ($newLine != null) {
-                    $return .= $newLine;
+                    $ret .= $newLine;
                     ++$indentCount;
                     foreach ($nodes as $node) {
-                        $return .= str_repeat($indentString, $indentCount);
-                        $return .= $this->toNodeString($node, $newLine, $indentString, $indentCount);
+                        $ret .= str_repeat($indentString, $indentCount);
+                        $ret .= $this->generateNodeString($node, $newLine, $indentString, $indentCount);
                     }
                 } else {
                     foreach ($nodes as $node) {
-                        $return .= $this->toNodeString($node, $newLine, $indentString, $indentCount);
+                        $ret .= $this->generateNodeString($node, $newLine, $indentString, $indentCount);
                     }
                 }
-            } elseif ($value !== null) {
-                if (!is_scalar($value)) {
-                    $value = json_encode($value);
-                }
-                // escape [<,>]
-                $return .= str_replace(['<', '>'], ['&lt;', '&gt;'], $value);
             }
 
-            if ($hasNodes && $newLine != null) {
-                $return .= str_repeat($indentString, --$indentCount);
+            if ($nodes != null && $newLine != null) {
+                $ret .= str_repeat($indentString, --$indentCount);
             }
 
-            // close tag
-            $return .= "</{$name}>{$newLine}";
+            // Close tag.
+            $ret .= "</{$name}>{$newLine}";
         }
 
-        return $return;
+        return $ret;
     }
 
     /**
-     * To attribute string.
+     * Generate attribute string.
      * @param  array $attributes
      * @return string
+     * @throws froq\dom\DomException If no valid attribute name given.
      */
-    private final function toAttributeString(array $attributes): string
+    private final function generateAttributeString(array $attributes): string
     {
-        $return = '';
+        $ret = '';
 
-        // @see http://www.w3.org/TR/2008/REC-xml-20081126/#NT-Name
-        $namePattern = '~^
+        // Validate name (@see http://www.w3.org/TR/2008/REC-xml-20081126/#NT-Name).
+        static $notAllowedChars = '\'"=';
+        static $namePattern = '~^
             [a-zA-Z_]+(?:[a-zA-Z0-9-_]+)?(?:(?:[:]+)?[a-zA-Z0-9-_:]+)? # name(..)
           | [:][a-zA-Z0-9-_:]*                                         # name:(..)
         $~x';
+
         foreach ($attributes as $name => $value) {
             $name = (string) $name;
-            if (!preg_match($namePattern, $name)) {
+
+            if (strpbrk($name, $notAllowedChars) !== false) {
+                throw new DomException("No valid attribute name '{$name}' given (tip: don't use ".
+                    "these characters '{$notAllowedChars}' in name)");
+            } elseif (!preg_match($namePattern, $name)) {
                 throw new DomException("No valid attribute name '{$name}' given (tip: use a name ".
                     "that matches with '{$namePattern}'");
-            }
-
-            static $notAllowedChars = '\'"=';
-            if (strpbrk($name, $notAllowedChars) !== false) {
-                throw new DomException("No valid attribute name '{$name}' given (tip: don't use these ".
-                    "characters `{$notAllowedChars}` in name)");
             }
 
             if (!is_scalar($value)) {
                 $value = json_encode($value);
             }
 
-            // escape ["]
+            // Escape (").
             $value = str_replace('"', '&#34;', $value);
 
-            $return .= " {$name}=\"{$value}\"";
+            $ret .= " {$name}=\"{$value}\"";
         }
 
-        return $return;
+        return $ret;
     }
 }
