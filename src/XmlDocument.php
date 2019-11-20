@@ -26,8 +26,10 @@ declare(strict_types=1);
 
 namespace froq\dom;
 
+use froq\dom\Document;
+
 /**
- * Xml document.
+ * Xml Document.
  * @package froq\dom
  * @object  froq\dom\XmlDocument
  * @author  Kerem Güneş <k-gun@mail.com>
@@ -37,7 +39,7 @@ final class XmlDocument extends Document
 {
     /**
      * Constructor.
-     * @param array|null $data
+     * @param array|null  $data
      * @param string|null $xmlVersion
      * @param string|null $xmlEncoding
      */

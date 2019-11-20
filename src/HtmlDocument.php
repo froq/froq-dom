@@ -26,8 +26,10 @@ declare(strict_types=1);
 
 namespace froq\dom;
 
+use froq\dom\Document;
+
 /**
- * Html document.
+ * Html Document.
  * @package froq\dom
  * @object  froq\dom\HtmlDocument
  * @author  Kerem Güneş <k-gun@mail.com>
