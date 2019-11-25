@@ -102,7 +102,7 @@ class DomDocument extends _DOMDocument
      */
     public final function getType(): ?string
     {
-        return ($this->type ?? null);
+        return $this->type ?? null;
     }
 
     /**
@@ -127,7 +127,7 @@ class DomDocument extends _DOMDocument
      */
     public final function getBaseUrl(): ?string
     {
-        return ($this->baseUrl ?? null);
+        return $this->baseUrl ?? null;
     }
 
     /**
