@@ -49,7 +49,7 @@ final class NodeList extends DOMNodeList implements Arrayable, IteratorAggregate
 {
     /**
      * Items.
-     * @var array
+     * @var array<DOMNode>
      */
     private array $items = [];
 
@@ -90,7 +90,7 @@ final class NodeList extends DOMNodeList implements Arrayable, IteratorAggregate
 
     /**
      * Items.
-     * @return array
+     * @return array<DOMNode>
      */
     public function items(): array
     {
@@ -165,7 +165,7 @@ final class NodeList extends DOMNodeList implements Arrayable, IteratorAggregate
     }
 
     /**
-     * @inheritDoc froq\interfaces\Stringable
+     * @inheritDoc froq\interfaces\Arrayable
      */
     public function toArray(): array
     {
