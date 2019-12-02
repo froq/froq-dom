@@ -26,8 +26,8 @@ declare(strict_types=1);
 
 namespace froq\dom;
 
+use froq\inters\Arrayable;
 use froq\dom\DomException;
-use froq\interfaces\Arrayable;
 use DOMNode, DOMNodeList;
 use IteratorAggregate, ArrayAccess, ArrayIterator, Traversable;
 
@@ -165,7 +165,7 @@ final class NodeList extends DOMNodeList implements Arrayable, IteratorAggregate
     }
 
     /**
-     * @inheritDoc froq\interfaces\Arrayable
+     * @inheritDoc froq\inters\Arrayable
      */
     public function toArray(): array
     {

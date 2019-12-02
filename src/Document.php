@@ -26,7 +26,7 @@ declare(strict_types=1);
 
 namespace froq\dom;
 
-use froq\interfaces\Stringable;
+use froq\inters\Stringable;
 
 /**
  * Document.
@@ -179,11 +179,12 @@ class Document implements Stringable
     }
 
     /**
-     * To string.
-     * @param  bool   $indent
-     * @param  string $indentString
-     * @return string
-     * @throws froq\dom\DomException If no valid @root given in document data.
+     * @inheritDoc froq\inters\Stringable
+     *
+     * @param      bool   $indent
+     * @param      string $indentString
+     * @return     string
+     * @throws     froq\dom\DomException If no valid @root given in document data.
      */
     public final function toString(bool $indent = false, string $indentString = "\t"): string
     {
