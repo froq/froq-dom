@@ -26,7 +26,7 @@ declare(strict_types=1);
 
 namespace froq\dom;
 
-use froq\interfaces\Stringable;
+use froq\common\interfaces\Stringable;
 
 /**
  * Document.
@@ -179,7 +179,7 @@ class Document implements Stringable
     }
 
     /**
-     * @inheritDoc froq\interfaces\Stringable
+     * @inheritDoc froq\common\interfaces\Stringable
      *
      * @param      bool   $indent
      * @param      string $indentString
