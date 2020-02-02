@@ -154,7 +154,7 @@ class Document implements Stringable
      */
     public final function getXmlVersion(): ?string
     {
-        return ($this->xmlVersion ?? null);
+        return $this->xmlVersion ?? null;
     }
 
     /**
@@ -175,7 +175,7 @@ class Document implements Stringable
      */
     public final function getXmlEncoding(): ?string
     {
-        return ($this->xmlEncoding ?? null);
+        return $this->xmlEncoding ?? null;
     }
 
     /**
