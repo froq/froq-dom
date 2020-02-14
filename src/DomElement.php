@@ -65,8 +65,8 @@ class DomElement extends _DOMElement
             return call_user_func_array([$this->ownerDocument, $method], [$methodArgs[0], $this]);
         }
 
-        throw new DomException(sprintf('Invalid method call as %s, available methods are %s',
-            $method, join(', ', $methods)));
+        throw new DomException('Invalid method call as "%s", available methods are: %s',
+            [$method, join(', ', $methods)]);
     }
 }
 

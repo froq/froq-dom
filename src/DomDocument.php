@@ -162,9 +162,9 @@ class DomDocument extends _DOMDocument
             $optionsDefault['throwErrors'] = false;
         }
 
-        @ ['validateOnParse' => $validateOnParse, 'preserveWhiteSpace' => $preserveWhiteSpace,
-           'strictErrorChecking' => $strictErrorChecking, 'throwErrors' => $throwErrors, 'flags' => $flags
-          ] = array_merge($optionsDefault, $options ?? []);
+        ['validateOnParse' => $validateOnParse, 'preserveWhiteSpace' => $preserveWhiteSpace,
+         'strictErrorChecking' => $strictErrorChecking, 'throwErrors' => $throwErrors, 'flags' => $flags
+        ] = array_merge($optionsDefault, $options ?? []);
 
         $this->validateOnParse = (bool) $validateOnParse;
         $this->preserveWhiteSpace = (bool) $preserveWhiteSpace;
@@ -197,8 +197,9 @@ class DomDocument extends _DOMDocument
 
             if ($throwErrors) {
                 throw new DomException(sprintf(
-                    'Parse error: %s (level:%s code:%s column:%s file:%s line:%s)',
-                    $error->message, $error->level, $error->code, $error->column, $error->file, $error->line
+                    'Parse error: %s (level: %s code: %s column: %s file: %s line: %s)',
+                    $error->message, $error->level, $error->code,
+                    $error->column, $error->file, $error->line
                 ), $error->code);
             }
         }
@@ -258,7 +259,8 @@ class DomDocument extends _DOMDocument
     {
         $query = trim($query);
         if ($query == '') {
-            throw new DomException('Empty query given to '. __method__);
+            throw new DomException('Empty query given to "%s", non-empty query required',
+                [__method__]);
         }
 
         $nodes = $this->xpath()->query($query, $root);
@@ -266,7 +268,6 @@ class DomDocument extends _DOMDocument
         if ($nodes && $nodes->length > 0) {
             return new NodeList($nodes);
         }
-
         return null;
     }
 
