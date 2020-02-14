@@ -259,7 +259,7 @@ class DomDocument extends _DOMDocument
     {
         $query = trim($query);
         if ($query == '') {
-            throw new DomException('Empty query given to "%s", non-empty query required',
+            throw new DomException('Empty query given to "%s()", non-empty query required',
                 [__method__]);
         }
 
