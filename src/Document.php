@@ -82,15 +82,15 @@ class Document implements Stringable
      * @param string|null $xmlVersion
      * @param string|null $xmlEncoding
      */
-    public function __construct(string $type, array $data = null, string $xmlVersion = null,
-        string $xmlEncoding = null)
+    public function __construct(string $type, array $data = null,
+                                string $xmlVersion = null, string $xmlEncoding = null)
     {
         $this->setType($type);
         $this->setData($data ?? []);
 
         if ($type == self::TYPE_XML) {
-            $xmlVersion  && $this->setXmlVersion($xmlVersion ?? self::XML_VERSION);
-            $xmlEncoding && $this->setXmlEncoding($xmlEncoding ?? self::XML_ENCODING);
+            $this->setXmlVersion($xmlVersion ?: self::XML_VERSION);
+            $this->setXmlEncoding($xmlEncoding ?: self::XML_ENCODING);
         }
     }
 
@@ -187,7 +187,7 @@ class Document implements Stringable
      * @throws     froq\dom\DomException
      */
     public final function toString(bool $indent = false, string $indentString = "\t"): string
-    {
+    {   $indent=true;
         $newLine = "\n";
         if (!$indent) {
             $newLine = '';
@@ -197,10 +197,9 @@ class Document implements Stringable
         $ret = '';
 
         if ($this->type == self::TYPE_HTML) {
-            $ret = "<!DOCTYPE html>{$newLine}";
+            $ret = '<!DOCTYPE html>'. $newLine;
         } elseif ($this->type == self::TYPE_XML) {
-            $ret = "<?xml version=\"". ($this->xmlVersion ?: self::XML_VERSION) ."\"".
-                " encoding=\"". ($this->xmlEncoding ?: self::XML_ENCODING) ."\"?>{$newLine}";
+            $ret = '<?xml version="'. $this->xmlVersion .'" encoding="'. $this->xmlEncoding .'"?>'. $newLine;
         }
         $root = $this->data['@root'] ?? null;
         if ($root == null) {
