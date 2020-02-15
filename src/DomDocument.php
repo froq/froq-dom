@@ -196,11 +196,11 @@ class DomDocument extends _DOMDocument
             $error->message = trim($error->message);
 
             if ($throwErrors) {
-                throw new DomException(sprintf(
+                throw new DomException(
                     'Parse error: %s (level: %s code: %s column: %s file: %s line: %s)',
-                    $error->message, $error->level, $error->code,
-                    $error->column, $error->file, $error->line
-                ), $error->code);
+                    [$error->message, $error->level, $error->code, $error->column, $error->file, $error->line],
+                    $error->code
+                );
             }
         }
 
