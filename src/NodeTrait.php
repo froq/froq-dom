@@ -77,7 +77,7 @@ trait NodeTrait
      */
     public function html(bool $outer = false): ?string
     {
-        // Also a document ($this) could be given.
+        // Also a document ($this) may be given.
         $doc = $this->ownerDocument ?? $this;
         $docType = $doc->getType();
 
