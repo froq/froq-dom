@@ -184,7 +184,7 @@ class Document implements Stringable
      * @param      bool   $indent
      * @param      string $indentString
      * @return     string
-     * @throws     froq\dom\DomException If no valid @root given in document data.
+     * @throws     froq\dom\DomException
      */
     public final function toString(bool $indent = false, string $indentString = "\t"): string
     {
@@ -339,7 +339,7 @@ class Document implements Stringable
      * Generate attribute string.
      * @param  array $attributes
      * @return string
-     * @throws froq\dom\DomException If no valid attribute name given.
+     * @throws froq\dom\DomException
      */
     private final function generateAttributeString(array $attributes): string
     {
