@@ -203,13 +203,13 @@ class Document implements Stringable
         }
         $root = $this->data['@root'] ?? null;
         if ($root == null) {
-            throw new DomException('No @root found in given document data');
+            throw new DomException('Invalid document data, no @root field found in given data');
         }
 
         // Eg: [name, content?, @nodes?, @attributes?, @selfClosing?].
         @ [$rootName, $rootContent] = $root;
         if ($rootName == null) {
-            throw new DomException('No @root tag found in given document data');
+            throw new DomException('Invalid document data, no @root tag field found in given data');
         }
 
         $nodes = $root['@nodes'] ?? null;
