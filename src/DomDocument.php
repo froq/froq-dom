@@ -88,7 +88,7 @@ class DomDocument extends _DOMDocument
     public final function setType(string $type): self
     {
         if ($type != Document::TYPE_XML && $type != Document::TYPE_HTML) {
-            throw new DomException('Invalid type, type could be xml or html');
+            throw new DomException('Invalid type, type must be "xml" or "html"');
         }
 
         $this->type = $type;
