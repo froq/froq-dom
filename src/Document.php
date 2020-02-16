@@ -187,7 +187,7 @@ class Document implements Stringable
      * @throws     froq\dom\DomException
      */
     public final function toString(bool $indent = false, string $indentString = "\t"): string
-    {   $indent=true;
+    {
         $newLine = "\n";
         if (!$indent) {
             $newLine = '';
