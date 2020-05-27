@@ -26,28 +26,21 @@ declare(strict_types=1);
 
 namespace froq\dom;
 
+use froq\dom\{DomDocument, Document, XmlDocument, HtmlDocument};
+
 /**
  * Dom.
  * @package froq\dom
  * @object  froq\dom\Dom
  * @author  Kerem Güneş <k-gun@mail.com>
  * @since   3.0
+ * @static
  */
-final /* static */ class Dom
+final class Dom
 {
     /**
-     * Create html document.
-     * @param  array|null $data
-     * @return froq\dom\HtmlDocument
-     */
-    public static function createHtmlDocument(array $data = null): HtmlDocument
-    {
-        return new HtmlDocument($data);
-    }
-
-    /**
      * Create xml document.
-     * @param  array|null $data
+     * @param  array|null  $data
      * @param  string|null $xmlVersion
      * @param  string|null $xmlEncoding
      * @return froq\dom\XmlDocument
@@ -59,71 +52,62 @@ final /* static */ class Dom
     }
 
     /**
+     * Create html document.
+     * @param  array|null $data
+     * @return froq\dom\HtmlDocument
+     */
+    public static function createHtmlDocument(array $data = null): HtmlDocument
+    {
+        return new HtmlDocument($data);
+    }
+
+    /**
      * Parse xml.
-     * @param  any  $xml
-     * @param  array $options
-     * @return any
-     * @throws froq\dom\DomException If $options['throwErrors'] is true.
+     * @param  any        $xml
+     * @param  array|null $options
+     * @return any|null
      */
     public static function parseXml($xml, array $options = null)
     {
+        if ($xml === '')   return null;
+        if ($xml === null) return null;
+
         $root = $xml;
-        static $error, $xmlProperties;
+        static $error, $xmlProperties, $toObject;
 
         if (is_string($root)) {
-            static $optionsDefault = [
-                'validateOnParse' => false, 'preserveWhiteSpace' => false,
-                'strictErrorChecking' => false, 'throwErrors' => false, 'flags' => 0
-            ];
-
-            ['validateOnParse' => $validateOnParse, 'preserveWhiteSpace' => $preserveWhiteSpace,
-             'strictErrorChecking' => $strictErrorChecking, 'throwErrors' => $throwErrors, 'flags' => $flags
-            ] = array_merge($optionsDefault, $options ?? []);
-
-            $root = new \DOMDocument();
-            $root->validateOnParse = !!$validateOnParse;
-            $root->preserveWhiteSpace = !!$preserveWhiteSpace;
-            $root->strictErrorChecking = !!$strictErrorChecking;
-
-            libxml_use_internal_errors(true);
-            $root->loadXml($xml, intval($flags) + (
-                LIBXML_NOERROR | LIBXML_NOWARNING | LIBXML_BIGLINES |
-                LIBXML_COMPACT | LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
-            ));
-
-            $error = libxml_get_last_error();
-            if ($error) {
-                libxml_clear_errors();
-                $error->file = $error->file ?: 'n/a';
-                $error->message = trim($error->message);
-                if ($throwErrors) {
-                    throw new DomException(sprintf('Parse error: %s (level:%s code:%s column:%s file:%s line:%s)',
-                        $error->message, $error->level, $error->code, $error->column, $error->file, $error->line
-                    ), $error->code);
-                }
-            }
+            $root = new DomDocument();
+            $root->loadXml($xml, $options);
         }
 
-        $return = [];
+        $ret = [];
 
-        // some speed up..
+        // Some speed...
         if ($xmlProperties === null) {
             $xmlProperties = [];
             if ($root->nodeType == XML_DOCUMENT_NODE) {
-                // add real root tag, not #document
+                // Add real root tag, not #document.
                 $xmlProperties['@root'] = $root->firstChild->tagName ?? null;
                 $xmlProperties['@error'] = $error ?: null;
                 $xmlProperties['version'] = $root->xmlVersion;
                 $xmlProperties['encoding'] = $root->xmlEncoding;
             }
-            $return['@xml'] = $xmlProperties;
+            $ret['@xml'] = $xmlProperties;
         }
-
+        if ($toObject === null) {
+            $toObject = function ($input) use (&$toObject) {
+                $input = (object) $input;
+                foreach ($input as $key => $value) {
+                    $input->{$key} = is_array($value) ? $toObject($value) : $value;
+                }
+                return $input;
+            };
+        }
 
         if ($root->hasAttributes()) {
             $attributes = $root->attributes;
             foreach ($attributes as $attribute) {
-                $return['@attributes'][$attribute->name] = $attribute->value;
+                $ret['@attributes'][$attribute->name] = $attribute->value;
             }
         }
 
@@ -132,34 +116,38 @@ final /* static */ class Dom
             if ($nodes->length == 1) {
                 $node = $nodes->item(0);
                 if ($node->nodeType == XML_TEXT_NODE) {
-                    $return['@value'] = $node->nodeValue;
-                    return count($return) == 1 ? $return['@value'] : $return;
+                    $ret['@value'] = $node->nodeValue;
+                    return count($ret) == 1 ? $ret['@value'] : $ret;
                 }
             }
 
             $groups = [];
             foreach ($nodes as $node) {
                 $nodeName = $node->nodeName;
-                $nodeType = $node->nodeType;
-                if (!isset($return[$nodeName])) {
-                    $return[$nodeName] = self::parseXml($node, $options);
-                    // single node
-                    if ($return[$nodeName] == []) {
-                        $return[$nodeName] = null;
+                if (!isset($ret[$nodeName])) {
+                    $ret[$nodeName] = self::parseXml($node, $options);
+                    // Single node.
+                    if ($ret[$nodeName] == []) {
+                        $ret[$nodeName] = null;
                     }
                 } else {
-                    // multi nodes
+                    // Multi nodes.
                     if (!isset($groups[$nodeName])) {
                         $groups[$nodeName] = 1;
-                        $return[$nodeName] = [$return[$nodeName]];
+                        $ret[$nodeName] = [$ret[$nodeName]];
                     }
-                    $return[$nodeName][] = self::parseXml($node, $options);
+                    $ret[$nodeName][] = self::parseXml($node, $options);
                 }
             }
         } elseif ($root->nodeType == XML_COMMENT_NODE) {
-            $return = $root->nodeValue;
+            $ret = $root->nodeValue;
         }
 
-        return $return;
+        $assoc = $options['assoc'] ?? true;
+        if (!$assoc && is_array($ret)) {
+            $ret = $toObject($ret);
+        }
+
+        return $ret;
     }
 }

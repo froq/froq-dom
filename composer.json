@@ -1,16 +1,17 @@
 {
     "name": "froq/froq-dom",
     "homepage": "https://github.com/froq/froq-dom",
-    "description": "Dom module for Froq!",
+    "description": "Froq! Dom.",
     "keywords": ["froq", "dom"],
     "license": "MIT",
     "authors": [
         {"name": "Kerem Güneş", "email": "k-gun@mail.com"}
     ],
     "require": {
-        "php": "^7.2",
+        "php": "^7.4",
         "ext-dom": "*",
-        "ext-libxml": "*"
+        "ext-libxml": "*",
+        "froq/froq-common": "^4.0"
     },
     "autoload": {
         "classmap": ["src/"]

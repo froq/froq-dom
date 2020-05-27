@@ -26,12 +26,14 @@ declare(strict_types=1);
 
 namespace froq\dom;
 
+use froq\common\Exception;
+
 /**
- * Dom exception.
+ * Dom Exception.
  * @package froq\dom
  * @object  froq\dom\DomException
  * @author  Kerem Güneş <k-gun@mail.com>
  * @since   3.0
  */
-final class DomException extends \Exception
+final class DomException extends Exception
 {}
