@@ -209,7 +209,7 @@ final class NodeList extends DOMNodeList implements Arrayable, IteratorAggregate
      *
      * @throws froq\dom\DomException
      */
-    public function offsetSet($i, $_): void
+    public function offsetSet($i, $iv): void
     {
         throw new DomException('Cannot modify read-only '. self::class .' object');
     }
