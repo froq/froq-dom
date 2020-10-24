@@ -280,7 +280,7 @@ trait NodeTrait
         $parent = $this->parentNode;
         $parents = [];
 
-        while ($parent && in_array($parent->nodeType, $parentTypes)) {
+        while ($parent && in_array($parent->nodeType, $parentTypes, true)) {
             $parents[] = $parent;
             $parent = $parent->parentNode;
         }
