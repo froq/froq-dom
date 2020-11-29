@@ -254,7 +254,7 @@ class Document implements Stringable
      * @param  int    $indentCount @internal
      * @return string
      */
-    private final function generateNodeString(array $node, string $newLine = '',
+    private function generateNodeString(array $node, string $newLine = '',
         string $indentString = '', int $indentCount = 1): string
     {
         // Eg: [name, content?, @nodes?, @attributes?, @selfClosing?].
