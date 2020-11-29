@@ -7,10 +7,9 @@ declare(strict_types=1);
 
 namespace froq\dom;
 
-use froq\common\interfaces\Arrayable;
 use froq\dom\DomException;
-use DOMNode, DOMNodeList;
-use IteratorAggregate, ArrayAccess, ArrayIterator, Traversable;
+use froq\common\interfaces\Arrayable;
+use DOMNode, DOMNodeList, IteratorAggregate, ArrayAccess, ArrayIterator, Traversable;
 
 // Suppress useless 'Declaration of ...' warnings.
 @(function () {
@@ -192,7 +191,7 @@ final class NodeList extends DOMNodeList implements Arrayable, IteratorAggregate
      */
     public function offsetSet($i, $iv): void
     {
-        throw new DomException('Cannot modify read-only '. self::class .' object');
+        throw new DomException("Cannot modify read-only '%s' object", self::class);
     }
 
     /**
@@ -202,7 +201,7 @@ final class NodeList extends DOMNodeList implements Arrayable, IteratorAggregate
      */
     public function offsetUnset($i): void
     {
-        throw new DomException('Cannot modify read-only '. self::class .' object');
+        throw new DomException("Cannot modify read-only '%s' object", self::class);
     }
 }
 

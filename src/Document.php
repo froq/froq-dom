@@ -185,13 +185,13 @@ class Document implements Stringable
         }
         $root = $this->data['@root'] ?? null;
         if ($root == null) {
-            throw new DomException('Invalid document data, no @root field found in given data');
+            throw new DomException("Invalid document data, no '@root' field found in given data");
         }
 
         // Eg: [name, content?, @nodes?, @attributes?, @selfClosing?].
         @ [$rootName, $rootContent] = $root;
         if ($rootName == null) {
-            throw new DomException('Invalid document data, no @root tag field found in given data');
+            throw new DomException("Invalid document data, no '@root' tag field found in given data");
         }
 
         $nodes = $root['@nodes'] ?? null;
@@ -329,19 +329,19 @@ class Document implements Stringable
         // Validate name (@see http://www.w3.org/TR/2008/REC-xml-20081126/#NT-Name).
         static $notAllowedChars = '\'"=';
         static $namePattern = '~^
-            [a-zA-Z_]+(?:[a-zA-Z0-9-_]+)?(?:(?:[:]+)?[a-zA-Z0-9-_:]+)? # name(..)
-          | [:][a-zA-Z0-9-_:]*                                         # name:(..)
+            [a-zA-Z_]+(?:[a-zA-Z0-9-_]+)?(?:(?:[:]+)?[a-zA-Z0-9-_:]+)? # name..
+          | [:][a-zA-Z0-9-_:]*                                         # name:..
         $~x';
 
         foreach ($attributes as $name => $value) {
             $name = (string) $name;
 
             if (strpbrk($name, $notAllowedChars) !== false) {
-                throw new DomException("No valid attribute name '{$name}' given (tip: don't use ".
-                    "these characters '{$notAllowedChars}' in name)");
+                throw new DomException("No valid attribute name '%s' given (tip: don't use "
+                    . "these characters '%s' in name)", [$name, $notAllowedChars]);
             } elseif (!preg_match($namePattern, $name)) {
-                throw new DomException("No valid attribute name '{$name}' given (tip: use a name ".
-                    "that matches with '{$namePattern}'");
+                throw new DomException("No valid attribute name '%s' given (tip: use a name "
+                    . "that matches with '%s'", [$name, $namePattern]);
             }
 
             if (!is_scalar($value)) {

@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace froq\dom;
 
-use froq\dom\{NodeTrait, NodeList, Document, DomElement, DomException};
+use froq\dom\{DomException, NodeTrait, NodeList, Document, DomElement};
 use DOMNode, DOMNodeList, DOMXPath, DOMDocument as _DOMDocument;
 
 // Suppress useless 'Declaration of ...' warnings.
@@ -70,7 +70,7 @@ class DomDocument extends _DOMDocument
     public final function setType(string $type): self
     {
         if ($type != Document::TYPE_XML && $type != Document::TYPE_HTML) {
-            throw new DomException('Invalid type, type must be "xml" or "html"');
+            throw new DomException("Invalid type, type must be 'xml' or 'html'");
         }
 
         $this->type = $type;
@@ -241,8 +241,7 @@ class DomDocument extends _DOMDocument
     {
         $query = trim($query);
         if ($query == '') {
-            throw new DomException('Empty query given to "%s()", non-empty query required',
-                [__method__]);
+            throw new DomException("Empty query given to '%s'", __method__);
         }
 
         $nodes = $this->xpath()->query($query, $root);

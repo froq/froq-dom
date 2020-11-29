@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace froq\dom;
 
-use froq\dom\{NodeTrait, DomException};
+use froq\dom\{DomException, NodeTrait};
 use DOMElement as _DOMElement;
 
 // Suppress useless 'Declaration of ...' warnings.
@@ -47,7 +47,7 @@ class DomElement extends _DOMElement
             return call_user_func_array([$this->ownerDocument, $method], [$methodArgs[0], $this]);
         }
 
-        throw new DomException('Invalid method call as "%s", available methods are: %s',
+        throw new DomException("Invalid method call as '%s()', valids are: %s",
             [$method, join(', ', $methods)]);
     }
 }
