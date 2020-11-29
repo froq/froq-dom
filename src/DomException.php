@@ -17,5 +17,5 @@ use froq\common\Exception;
  * @author  Kerem Güneş <k-gun@mail.com>
  * @since   3.0
  */
-final class DomException extends Exception
+class DomException extends Exception
 {}
