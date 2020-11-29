@@ -352,7 +352,7 @@ class DomDocument extends _DOMDocument
      * @param  string $url
      * @return ?string
      */
-    private static final function prepareUrl(string $url): ?string
+    private static function prepareUrl(string $url): ?string
     {
         preg_match('~^(?:(?<scheme>\w+://|//))?
                       (?:(?<host>[\w\.\-]+\.\w{2,}))
