@@ -322,7 +322,7 @@ class Document implements Stringable
      * @return string
      * @throws froq\dom\DomException
      */
-    private final function generateAttributeString(array $attributes): string
+    private function generateAttributeString(array $attributes): string
     {
         $ret = '';
 
