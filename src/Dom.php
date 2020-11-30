@@ -77,12 +77,12 @@ final class Dom
             $ret['@xml'] = $xmlProperties;
         }
         if ($toObject === null) {
-            $toObject = function ($input) use (&$toObject) {
-                $input = (object) $input;
-                foreach ($input as $key => $value) {
-                    $input->{$key} = is_array($value) ? $toObject($value) : $value;
+            $toObject = function ($in) use (&$toObject) {
+                $in = (object) $in;
+                foreach ($in as $key => $value) {
+                    $in->{$key} = is_array($value) ? $toObject($value) : $value;
                 }
-                return $input;
+                return $in;
             };
         }
 
