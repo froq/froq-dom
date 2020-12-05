@@ -21,6 +21,7 @@ final class HtmlDocument extends Document
 {
     /**
      * Constructor.
+     *
      * @param array|null $data
      */
     public function __construct(array $data = null)

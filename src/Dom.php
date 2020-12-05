@@ -8,9 +8,13 @@ declare(strict_types=1);
 namespace froq\dom;
 
 use froq\dom\{Document, DomDocument, XmlDocument, HtmlDocument};
+use DOMNode;
 
 /**
  * Dom.
+ *
+ * Represents a factory entity for XmlDocument/HtmlDocument classes, and contains a parser method for parsing
+ * XML documents.
  *
  * @package froq\dom
  * @object  froq\dom\Dom
@@ -21,20 +25,21 @@ use froq\dom\{Document, DomDocument, XmlDocument, HtmlDocument};
 final class Dom
 {
     /**
-     * Create xml document.
+     * Create an XML document.
+     *
      * @param  array|null  $data
-     * @param  string|null $xmlVersion
-     * @param  string|null $xmlEncoding
+     * @param  string|null $version
+     * @param  string|null $encoding
      * @return froq\dom\XmlDocument
      */
-    public static function createXmlDocument(array $data = null, string $xmlVersion = null,
-        string $xmlEncoding = null): XmlDocument
+    public static function createXmlDocument(array $data = null, string $version = null, string $encoding = null): XmlDocument
     {
-        return new XmlDocument($data, $xmlVersion, $xmlEncoding);
+        return new XmlDocument($data, $version, $encoding);
     }
 
     /**
-     * Create html document.
+     * Create an HTML document.
+     *
      * @param  array|null $data
      * @return froq\dom\HtmlDocument
      */
@@ -44,46 +49,32 @@ final class Dom
     }
 
     /**
-     * Parse xml.
-     * @param  any        $xml
-     * @param  array|null $options
-     * @return any|null
+     * Parse XML string or DOMNode.
+     *
+     * @param  string|DOMNode $xml
+     * @param  array|null     $options
+     * @return array|object|string|null
      */
-    public static function parseXml($xml, array $options = null)
+    public static function parseXml(string|DOMNode $xml, array $options = null): array|object|string|null
     {
         if ($xml === '')   return null;
         if ($xml === null) return null;
 
         $root = $xml;
-        static $error, $xmlProperties, $toObject;
+        static $xmlProps;
 
         if (is_string($root)) {
             $root = new DomDocument();
-            $root->loadXml($xml, $options);
+            $root->loadXmlSource($xml, $options);
         }
 
         $ret = [];
 
-        // Some speed...
-        if ($xmlProperties === null) {
-            $xmlProperties = [];
-            if ($root->nodeType == XML_DOCUMENT_NODE) {
-                // Add real root tag, not #document.
-                $xmlProperties['@root'] = $root->firstChild->tagName ?? null;
-                $xmlProperties['@error'] = $error ?: null;
-                $xmlProperties['version'] = $root->xmlVersion;
-                $xmlProperties['encoding'] = $root->xmlEncoding;
-            }
-            $ret['@xml'] = $xmlProperties;
-        }
-        if ($toObject === null) {
-            $toObject = function ($in) use (&$toObject) {
-                $in = (object) $in;
-                foreach ($in as $key => $value) {
-                    $in->{$key} = is_array($value) ? $toObject($value) : $value;
-                }
-                return $in;
-            };
+        if ($root->nodeType == XML_DOCUMENT_NODE) {
+            // Add real root tag, not #document.
+            $ret['@xml']['@root'] = $root->firstChild->nodeName ?? null;
+            $ret['@xml']['version'] = $root->version;
+            $ret['@xml']['encoding'] = $root->encoding;
         }
 
         if ($root->hasAttributes()) {
@@ -125,9 +116,9 @@ final class Dom
             $ret = $root->nodeValue;
         }
 
-        $assoc = $options['assoc'] ?? true;
-        if (!$assoc && is_array($ret)) {
-            $ret = $toObject($ret);
+        // Objectify.
+        if (!($options['assoc'] ?? true) && is_array($ret)) {
+            $ret = json_decode(json_encode($ret));
         }
 
         return $ret;

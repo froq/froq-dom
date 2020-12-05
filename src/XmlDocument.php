@@ -19,14 +19,21 @@ use froq\dom\Document;
  */
 final class XmlDocument extends Document
 {
+    /** @var string, string */
+    protected string $encoding, $version;
+
     /**
      * Constructor.
+     *
      * @param array|null  $data
-     * @param string|null $xmlVersion
-     * @param string|null $xmlEncoding
+     * @param string|null $encoding
+     * @param string|null $version
      */
-    public function __construct(array $data = null, string $xmlVersion = null, string $xmlEncoding = null)
+    public function __construct(array $data = null, string $encoding = null, string $version = null)
     {
-        parent::__construct(Document::TYPE_XML, $data, $xmlVersion, $xmlEncoding);
+        $this->encoding = $encoding ?: 'utf-8';
+        $this->version = $version ?: '1.0';
+
+        parent::__construct(Document::TYPE_XML, $data);
     }
 }
