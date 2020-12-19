@@ -184,7 +184,7 @@ final class NodeList extends DOMNodeList implements Arrayable, ArrayAccess, Iter
      */
     public function offsetSet($i, $node): void
     {
-        throw new DomException("Cannot modify read-only '%s' object", self::class);
+        throw new DomException('Cannot modify read-only object ' . self::class);
     }
 
     /**
@@ -194,6 +194,6 @@ final class NodeList extends DOMNodeList implements Arrayable, ArrayAccess, Iter
      */
     public function offsetUnset($i): void
     {
-        throw new DomException("Cannot modify read-only '%s' object", self::class);
+        throw new DomException('Cannot modify read-only object ' . self::class);
     }
 }

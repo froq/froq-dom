@@ -66,7 +66,7 @@ class DomDocument extends _DOMDocument
     public final function setType(string $type): self
     {
         if ($type != Document::TYPE_XML && $type != Document::TYPE_HTML) {
-            throw new DomException("Invalid type, type must be 'xml' or 'html'");
+            throw new DomException('Invalid type %s, valids are: xml, html', $type);
         }
 
         $this->type = $type;
@@ -136,8 +136,9 @@ class DomDocument extends _DOMDocument
         $this->setType($type);
 
         static $optionsDefault = [
-            'validateOnParse' => false, 'preserveWhiteSpace' => false,
-            'strictErrorChecking' => false, 'throwErrors' => true, 'flags' => 0
+            'validateOnParse'     => false, 'preserveWhiteSpace' => false,
+            'strictErrorChecking' => false, 'throwErrors'        => true,
+            'flags'               => 0
         ];
 
         // HTML is more quiet.
@@ -145,15 +146,13 @@ class DomDocument extends _DOMDocument
             $optionsDefault['throwErrors'] = false;
         }
 
-        ['validateOnParse' => $validateOnParse, 'preserveWhiteSpace' => $preserveWhiteSpace,
-         'strictErrorChecking' => $strictErrorChecking, 'throwErrors' => $throwErrors, 'flags' => $flags
-        ] = array_merge($optionsDefault, $options ?? []);
+        $options = array_merge($optionsDefault, (array) $options);
 
-        $this->validateOnParse = (bool) $validateOnParse;
-        $this->preserveWhiteSpace = (bool) $preserveWhiteSpace;
-        $this->strictErrorChecking = (bool) $strictErrorChecking;
+        $this->validateOnParse     = (bool) $options['validateOnParse'];
+        $this->preserveWhiteSpace  = (bool) $options['preserveWhiteSpace'];
+        $this->strictErrorChecking = (bool) $options['strictErrorChecking'];
 
-        $flags = ((int) $flags) | (
+        $flags = ((int) $options['flags']) | (
             LIBXML_NOERROR | LIBXML_NOWARNING | LIBXML_BIGLINES |
             LIBXML_COMPACT | LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
         );
@@ -165,7 +164,7 @@ class DomDocument extends _DOMDocument
             parent::loadXml($source, $flags);
         } elseif ($type == Document::TYPE_HTML) {
             // Workaround for a proper encoding.
-            if (strpos($source, '<?xml') !== 0) {
+            if (!str_starts_with($source, '<?xml')) {
                 $source = '<?xml'. $source;
             }
             parent::loadHtml($source, $flags);
@@ -178,7 +177,7 @@ class DomDocument extends _DOMDocument
             $error->file = $error->file ?: 'n/a';
             $error->message = trim($error->message);
 
-            if ($throwErrors) {
+            if ($options['throwErrors']) {
                 throw new DomException(
                     'Parse error: %s (level: %s code: %s column: %s file: %s line: %s)',
                     [$error->message, $error->level, $error->code, $error->column, $error->file, $error->line],

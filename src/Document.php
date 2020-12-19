@@ -56,7 +56,7 @@ class Document implements Stringable
     public final function setType(string $type): self
     {
         if ($type != self::TYPE_XML && $type != self::TYPE_HTML) {
-            throw new DomException("Invalid type, type must be 'xml' or 'html'");
+            throw new DomException('Invalid type %s, valids are: xml, html', $type);
         }
 
         $this->type = $type;
@@ -122,14 +122,14 @@ class Document implements Stringable
         }
 
         $root = $this->data['@root'] ?? null;
-        $root || throw new DomException("Invalid document data, no '@root' field found in given data");
+        $root || throw new DomException('Invalid document data, no @root field found in given data');
 
         // Eg: [name, content?, @nodes?, @attributes?, @selfClosing?].
         @ [$rootName, $rootContent] = $root;
-        $rootName || throw new DomException("Invalid document data, no '@root' tag field found in given data");
+        $rootName || throw new DomException('Invalid document data, no @root tag field found in given data');
 
-        $nodes = $root['@nodes'] ?? null;
-        $attributes = $root['@attributes'] ?? null;
+        $nodes       = $root['@nodes'] ?? null;
+        $attributes  = $root['@attributes'] ?? null;
         $selfClosing = $root['@selfClosing'] ?? false; // Not usual but valid.
 
         // Open root tag.
@@ -193,8 +193,8 @@ class Document implements Stringable
     {
         // Eg: [name, content?, @nodes?, @attributes?, @selfClosing?].
         @ [$name, $content] = $node;
-        $nodes = $node['@nodes'] ?? null;
-        $attributes = $node['@attributes'] ?? null;
+        $nodes       = $node['@nodes'] ?? null;
+        $attributes  = $node['@attributes'] ?? null;
         $selfClosing = $node['@selfClosing'] ?? false;
 
         // Open tag.
@@ -271,11 +271,11 @@ class Document implements Stringable
             $name = (string) $name;
 
             if (strpbrk($name, $notAllowedChars) !== false) {
-                throw new DomException("No valid attribute name '%s' given (tip: don't use "
-                    . "these characters '%s' in name)", [$name, $notAllowedChars]);
+                throw new DomException('No valid attribute name `%s` given [tip: don\'t use '
+                    . 'these characters `%s` in name]', [$name, $notAllowedChars]);
             } elseif (!preg_match($namePattern, $name)) {
-                throw new DomException("No valid attribute name '%s' given (tip: use a name "
-                    . "that matches with '%s'", [$name, $namePattern]);
+                throw new DomException('No valid attribute name `%s` given [tip: use a name '
+                    . 'that matches with `%s`', [$name, $namePattern]);
             }
 
             $value = json_encode($value, JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION);
