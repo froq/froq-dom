@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace froq\dom;
 
 use froq\dom\DomException;
-use froq\common\interfaces\Stringable;
+use froq\common\interface\Stringable;
 
 /**
  * Document.
@@ -98,7 +98,7 @@ class Document implements Stringable
     }
 
     /**
-     * @inheritDoc froq\common\interfaces\Stringable
+     * @inheritDoc froq\common\interface\Stringable
      *
      * @param  bool   $indent
      * @param  string $indentString
