@@ -61,7 +61,6 @@ final class Dom
         if ($xml === null) return null;
 
         $root = $xml;
-        static $xmlProps;
 
         if (is_string($root)) {
             $root = new DomDocument();
@@ -72,8 +71,8 @@ final class Dom
 
         if ($root->nodeType == XML_DOCUMENT_NODE) {
             // Add real root tag, not #document.
-            $ret['@xml']['@root'] = $root->firstChild->nodeName ?? null;
-            $ret['@xml']['version'] = $root->version;
+            $ret['@xml']['@root']    = $root->firstChild->nodeName ?? null;
+            $ret['@xml']['version']  = $root->version;
             $ret['@xml']['encoding'] = $root->encoding;
         }
 
