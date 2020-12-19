@@ -109,8 +109,7 @@ class Document implements Stringable
     {
         $newLine = "\n";
         if (!$indent) {
-            $newLine = '';
-            $indentString = '';
+            $newLine = $indentString = '';
         }
 
         $ret = '';
@@ -121,11 +120,11 @@ class Document implements Stringable
             $ret = '<?xml version="'. $this->version .'" encoding="'. $this->encoding .'"?>'. $newLine;
         }
 
-        $root = $this->data['@root'] ?? null;
+        $root = (array) ($this->data['@root'] ?? null);
         $root || throw new DomException('Invalid document data, no @root field found in given data');
 
         // Eg: [name, content?, @nodes?, @attributes?, @selfClosing?].
-        @ [$rootName, $rootContent] = $root;
+        [$rootName, $rootContent] = array_select($root, [0, 1]);
         $rootName || throw new DomException('Invalid document data, no @root tag field found in given data');
 
         $nodes       = $root['@nodes'] ?? null;
@@ -192,7 +191,7 @@ class Document implements Stringable
         int $indentCount = 1): string
     {
         // Eg: [name, content?, @nodes?, @attributes?, @selfClosing?].
-        @ [$name, $content] = $node;
+        [$name, $content] = array_select($node, [0, 1]);
         $nodes       = $node['@nodes'] ?? null;
         $attributes  = $node['@attributes'] ?? null;
         $selfClosing = $node['@selfClosing'] ?? false;
@@ -271,11 +270,11 @@ class Document implements Stringable
             $name = (string) $name;
 
             if (strpbrk($name, $notAllowedChars) !== false) {
-                throw new DomException('No valid attribute name `%s` given [tip: don\'t use '
-                    . 'these characters `%s` in name]', [$name, $notAllowedChars]);
+                throw new DomException('No valid attribute name `%s` given [tip: don\'t use'
+                    . ' these characters `%s` in name]', [$name, $notAllowedChars]);
             } elseif (!preg_match($namePattern, $name)) {
-                throw new DomException('No valid attribute name `%s` given [tip: use a name '
-                    . 'that matches with `%s`', [$name, $namePattern]);
+                throw new DomException('No valid attribute name `%s` given [tip: use a name'
+                    . ' that matches with `%s`', [$name, $namePattern]);
             }
 
             $value = json_encode($value, JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION);
