@@ -149,15 +149,15 @@ trait NodeTrait
                 $type = $this->getAttribute('type');
                 if ($type == 'radio' || $type == 'checkbox') {
                     return $this->hasAttribute('checked')
-                        ? $this->getAttribute('value') : null;
+                         ? $this->getAttribute('value') : null;
                 }
                 return $this->getAttribute('value');
             case 'option':
                 return $this->hasAttribute('selected')
-                    ? $this->getAttribute('value') : null;
+                     ? $this->getAttribute('value') : null;
             case 'select':
                 return ($option = $this->find('//option[@value][@selected]'))
-                    ? $option->getAttribute('value') : null;
+                     ? $option->getAttribute('value') : null;
             case 'img': case 'image': case 'iframe':
             case 'audio': case 'video': case 'track':
             case 'embed': case 'source':
