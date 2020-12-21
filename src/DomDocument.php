@@ -24,10 +24,7 @@ use DOMNode, DOMNodeList, DOMXPath, DOMDocument as _DOMDocument;
  */
 class DomDocument extends _DOMDocument
 {
-    /**
-     * Node trait.
-     * @see froq\dom\NodeTrait
-     */
+    /** @see froq\dom\NodeTrait */
     use NodeTrait;
 
     /** @var string */
@@ -46,7 +43,7 @@ class DomDocument extends _DOMDocument
      */
     public function __construct(string $version = '', string $encoding = '', string $type = null, string $baseUrl = null)
     {
-        $type && $this->setType($type);
+        $type    && $this->setType($type);
         $baseUrl && $this->setBaseUrl($baseUrl);
 
         // Without this: "PHP Warning:  DOMDocument::registerNodeClass(): Couldn't fetch ..."
@@ -132,8 +129,7 @@ class DomDocument extends _DOMDocument
      */
     public final function loadSource(string $type, string $source, array $options = null): self
     {
-        // @important
-        $this->setType($type);
+        $this->setType($type); // @important
 
         static $optionsDefault = [
             'validateOnParse'     => false, 'preserveWhiteSpace' => false,
@@ -312,8 +308,8 @@ class DomDocument extends _DOMDocument
     public final function findByTag(string $tag, DOMNode $root = null): DOMNodeList|null
     {
         return ($root == null) // Root needs (.) first in query.
-            ? $this->findAll("//{$tag}")
-            : $this->findAll(".//{$tag}", $root);
+             ? $this->findAll("//{$tag}")
+             : $this->findAll(".//{$tag}", $root);
     }
 
     /**
@@ -326,8 +322,8 @@ class DomDocument extends _DOMDocument
     public final function findByClass(string $class, DOMNode $root = null): DOMNodeList|null
     {
         return ($root == null) // Root needs (.) first in query.
-            ? $this->findAll("//*[contains(@class, '{$class}')]")
-            : $this->findAll(".//*[contains(@class, '{$class}')]", $root);
+             ? $this->findAll("//*[contains(@class, '{$class}')]")
+             : $this->findAll(".//*[contains(@class, '{$class}')]", $root);
     }
 
     /**
@@ -342,14 +338,14 @@ class DomDocument extends _DOMDocument
     {
         if ($value === null) {
             return ($root == null) // Root needs (.) first in query.
-                ? $this->findAll("//*[@{$name}]")
-                : $this->findAll(".//*[@{$name}]", $root);
+                 ? $this->findAll("//*[@{$name}]")
+                 : $this->findAll(".//*[@{$name}]", $root);
         } else {
             $value = addcslashes($value, '"');
 
             return ($root == null) // Root needs (.) first in query.
-                ? $this->findAll("//*[@{$name}='{$value}']")
-                : $this->findAll(".//*[@{$name}='{$value}']", $root);
+                 ? $this->findAll("//*[@{$name}='{$value}']")
+                 : $this->findAll(".//*[@{$name}='{$value}']", $root);
         }
     }
 
@@ -358,6 +354,7 @@ class DomDocument extends _DOMDocument
      *
      * @param  string $url
      * @return string|null
+     * @internal
      */
     private static function prepareUrl(string $url): string|null
     {

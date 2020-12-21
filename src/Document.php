@@ -26,7 +26,8 @@ class Document implements Stringable
      * Types.
      * @const string
      */
-    public const TYPE_XML = 'xml', TYPE_HTML = 'html';
+    public const TYPE_XML  = 'xml',
+                 TYPE_HTML = 'html';
 
     /** @var string */
     protected string $type;
@@ -127,8 +128,8 @@ class Document implements Stringable
         [$rootName, $rootContent] = array_select($root, [0, 1]);
         $rootName || throw new DomException('Invalid document data, no @root tag field found in given data');
 
-        $nodes       = $root['@nodes'] ?? null;
-        $attributes  = $root['@attributes'] ?? null;
+        $nodes       = $root['@nodes']       ?? null;
+        $attributes  = $root['@attributes']  ?? null;
         $selfClosing = $root['@selfClosing'] ?? false; // Not usual but valid.
 
         // Open root tag.
@@ -192,8 +193,8 @@ class Document implements Stringable
     {
         // Eg: [name, content?, @nodes?, @attributes?, @selfClosing?].
         [$name, $content] = array_select($node, [0, 1]);
-        $nodes       = $node['@nodes'] ?? null;
-        $attributes  = $node['@attributes'] ?? null;
+        $nodes       = $node['@nodes']       ?? null;
+        $attributes  = $node['@attributes']  ?? null;
         $selfClosing = $node['@selfClosing'] ?? false;
 
         // Open tag.

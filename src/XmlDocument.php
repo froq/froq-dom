@@ -32,7 +32,7 @@ final class XmlDocument extends Document
     public function __construct(array $data = null, string $encoding = null, string $version = null)
     {
         $this->encoding = $encoding ?: 'utf-8';
-        $this->version = $version ?: '1.0';
+        $this->version  = $version  ?: '1.0';
 
         parent::__construct(Document::TYPE_XML, $data);
     }

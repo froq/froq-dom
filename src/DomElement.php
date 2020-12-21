@@ -24,10 +24,7 @@ use DOMNode, DOMNodeList, DOMElement as _DOMElement;
  */
 class DomElement extends _DOMElement
 {
-    /**
-     * Node trait.
-     * @see froq\dom\NodeTrait
-     */
+    /** @see froq\dom\NodeTrait */
     use NodeTrait;
 
     /**
@@ -46,7 +43,7 @@ class DomElement extends _DOMElement
             return call_user_func_array([$this->ownerDocument, $method], [$methodArgs[0], $this]);
         }
 
-        throw new DomException('Invalid method call as %s() on %s object, valids are: %s',
+        throw new DomException('Invalid call as %s() on %s object, valids are: %s',
             [$method, $this::class, join(', ', $methods)]);
     }
 }
