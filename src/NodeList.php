@@ -1,7 +1,7 @@
 <?php
 /**
  * Copyright (c) 2015 · Kerem Güneş
- * Apache License 2.0 <https://opensource.org/licenses/apache-2.0>
+ * Apache License 2.0 · http://github.com/froq/froq-dom
  */
 declare(strict_types=1);
 
@@ -19,7 +19,7 @@ use DOMNode, DOMNodeList, IteratorAggregate, ArrayAccess, ArrayIterator, Travers
  *
  * @package froq\dom
  * @object  froq\dom\NodeList
- * @author  Kerem Güneş <k-gun@mail.com>
+ * @author  Kerem Güneş
  * @since   4.0
  */
 final class NodeList extends DOMNodeList implements Arrayable, ArrayAccess, IteratorAggregate
