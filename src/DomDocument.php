@@ -1,73 +1,47 @@
 <?php
 /**
- * MIT License <https://opensource.org/licenses/mit>
- *
- * Copyright (c) 2015 Kerem Güneş
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
- * to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * Copyright (c) 2015 · Kerem Güneş
+ * Apache License 2.0 · http://github.com/froq/froq-dom
  */
 declare(strict_types=1);
 
 namespace froq\dom;
 
-use froq\dom\{NodeTrait, NodeList, Document, DomElement, DomException};
+use froq\dom\{DomException, NodeTrait, NodeList, Document, DomElement};
 use DOMNode, DOMNodeList, DOMXPath, DOMDocument as _DOMDocument;
-
-// Suppress useless 'Declaration of ...' warnings.
-@(function () {
 
 /**
  * Dom Document.
+ *
+ * Represents a read-only DOM document entity that provides a DOMElement structure with additional
+ * utility methods such find(), findAll() etc. and NodeTrait methods, for loading XML/HTML documents
+ * and querying nodes via XPath utilities.
+ *
  * @package froq\dom
  * @object  froq\dom\DomDocument
- * @author  Kerem Güneş <k-gun@mail.com>
+ * @author  Kerem Güneş
  * @since   4.0
  */
 class DomDocument extends _DOMDocument
 {
-    /**
-     * Node trait.
-     * @object froq\dom\NodeTrait
-     */
+    /** @see froq\dom\NodeTrait */
     use NodeTrait;
 
-    /**
-     * Type.
-     * @var string
-     */
+    /** @var string */
     private string $type;
 
-    /**
-     * Base url.
-     * @var string
-     */
+    /** @var string */
     private string $baseUrl;
 
     /**
      * Constructor.
+     *
      * @param string      $version
      * @param string      $encoding
      * @param string|null $type
      * @param string|null $baseUrl
      */
-    public function __construct(string $version = '', string $encoding = '', string $type = null,
-        string $baseUrl = null)
+    public function __construct(string $version = '', string $encoding = '', string $type = null, string $baseUrl = null)
     {
         $type    && $this->setType($type);
         $baseUrl && $this->setBaseUrl($baseUrl);
@@ -80,7 +54,8 @@ class DomDocument extends _DOMDocument
     }
 
     /**
-     * Set type.
+     * Set document type.
+     *
      * @param  string $type
      * @return self
      * @throws froq\dom\DomException
@@ -88,7 +63,7 @@ class DomDocument extends _DOMDocument
     public final function setType(string $type): self
     {
         if ($type != Document::TYPE_XML && $type != Document::TYPE_HTML) {
-            throw new DomException('Invalid type, type must be "xml" or "html"');
+            throw new DomException('Invalid type %s, valids are: xml, html', $type);
         }
 
         $this->type = $type;
@@ -97,16 +72,18 @@ class DomDocument extends _DOMDocument
     }
 
     /**
-     * Get type.
-     * @return ?string
+     * Get document type.
+     *
+     * @return string|null
      */
-    public final function getType(): ?string
+    public final function getType(): string|null
     {
         return $this->type ?? null;
     }
 
     /**
-     * Set base url.
+     * Set base URL.
+     *
      * @param  string $baseUrl
      * @return self
      * @throws froq\dom\DomException
@@ -114,63 +91,64 @@ class DomDocument extends _DOMDocument
     public final function setBaseUrl(string $baseUrl): self
     {
         $baseUrl = self::prepareUrl($baseUrl);
-        if ($baseUrl == null) {
-            throw new DomException('Invalid URL');
-        }
+        $baseUrl || throw new DomException('Invalid URL');
 
         $this->baseUrl = $baseUrl;
+
+        return $this;
     }
 
     /**
-     * Get base url.
-     * @return ?string
+     * Get base URL.
+     *
+     * @return string|null
      */
-    public final function getBaseUrl(): ?string
+    public final function getBaseUrl(): string|null
     {
         return $this->baseUrl ?? null;
     }
 
     /**
-     * Root.
-     * @return ?DOMNode
+     * Get root node.
+     *
+     * @return DOMNode|null
      */
-    public final function root(): ?DOMNode
+    public final function root(): DOMNode|null
     {
         return $this->firstChild ?? null;
     }
 
     /**
-     * Load.
+     * Load an XML/HTML source by type.
+     *
      * @param  string     $type
      * @param  string     $source
      * @param  array|null $options
      * @return self
      * @throws froq\dom\DomException
      */
-    public final function load(string $type, string $source, array $options = null): self
+    public final function loadSource(string $type, string $source, array $options = null): self
     {
-        // @important
-        $this->setType($type);
+        $this->setType($type); // @important
 
         static $optionsDefault = [
-            'validateOnParse' => false, 'preserveWhiteSpace' => false,
-            'strictErrorChecking' => false, 'throwErrors' => true, 'flags' => 0
+            'validateOnParse'     => false, 'preserveWhiteSpace' => false,
+            'strictErrorChecking' => false, 'throwErrors'        => true,
+            'flags'               => 0
         ];
 
-        // Html is more quiet.
+        // HTML is more quiet.
         if ($type == Document::TYPE_HTML && !isset($options['throwErrors'])) {
             $optionsDefault['throwErrors'] = false;
         }
 
-        ['validateOnParse' => $validateOnParse, 'preserveWhiteSpace' => $preserveWhiteSpace,
-         'strictErrorChecking' => $strictErrorChecking, 'throwErrors' => $throwErrors, 'flags' => $flags
-        ] = array_merge($optionsDefault, $options ?? []);
+        $options = array_merge($optionsDefault, (array) $options);
 
-        $this->validateOnParse = (bool) $validateOnParse;
-        $this->preserveWhiteSpace = (bool) $preserveWhiteSpace;
-        $this->strictErrorChecking = (bool) $strictErrorChecking;
+        $this->validateOnParse     = (bool) $options['validateOnParse'];
+        $this->preserveWhiteSpace  = (bool) $options['preserveWhiteSpace'];
+        $this->strictErrorChecking = (bool) $options['strictErrorChecking'];
 
-        $flags = ((int) $flags) | (
+        $flags = ((int) $options['flags']) | (
             LIBXML_NOERROR | LIBXML_NOWARNING | LIBXML_BIGLINES |
             LIBXML_COMPACT | LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
         );
@@ -182,7 +160,7 @@ class DomDocument extends _DOMDocument
             parent::loadXml($source, $flags);
         } elseif ($type == Document::TYPE_HTML) {
             // Workaround for a proper encoding.
-            if (strpos($source, '<?xml') !== 0) {
+            if (!str_starts_with($source, '<?xml')) {
                 $source = '<?xml'. $source;
             }
             parent::loadHtml($source, $flags);
@@ -195,7 +173,7 @@ class DomDocument extends _DOMDocument
             $error->file = $error->file ?: 'n/a';
             $error->message = trim($error->message);
 
-            if ($throwErrors) {
+            if ($options['throwErrors']) {
                 throw new DomException(
                     'Parse error: %s (level: %s code: %s column: %s file: %s line: %s)',
                     [$error->message, $error->level, $error->code, $error->column, $error->file, $error->line],
@@ -206,9 +184,8 @@ class DomDocument extends _DOMDocument
 
         if (isset($options['baseUrl'])) {
             $baseUrl = self::prepareUrl($options['baseUrl']);
-            if ($baseUrl == null) {
-                throw new DomException('Invalid URL');
-            }
+            $baseUrl || throw new DomException('Invalid URL');
+
             $this->baseUrl = $baseUrl;
         } elseif ($base = $this->getBaseUrl()) {
             // May be set by setBaseUrl().
@@ -216,7 +193,7 @@ class DomDocument extends _DOMDocument
         } elseif ($base = $this->find('//base[@href]')) {
             // May be exists (<base href="...">) in dom document.
             $this->baseUrl = (string) $base->getAttribute('href');
-        } elseif ($this->baseURI != null) {
+        } elseif ($this->baseURI) {
             $this->baseUrl = $this->baseURI;
         }
 
@@ -224,23 +201,24 @@ class DomDocument extends _DOMDocument
     }
 
     /**
-     * @override
+     * @alias to loadSource() for XML sources.
      */
-    public final function loadXml(string $source, array $options = null): self
+    public final function loadXmlSource(string $source, array $options = null): self
     {
-        return $this->load(Document::TYPE_XML, $source, $options);
+        return $this->loadSource(Document::TYPE_XML, $source, $options);
     }
 
     /**
-     * @override
+     * @alias to loadSource() for HTML sources.
      */
-    public final function loadHtml(string $source, array $options = null): self
+    public final function loadHtmlSource(string $source, array $options = null): self
     {
-        return $this->load(Document::TYPE_HTML, $source, $options);
+        return $this->loadSource(Document::TYPE_HTML, $source, $options);
     }
 
     /**
-     * Xpath.
+     * Create an XPath object.
+     *
      * @return DOMXPath
      */
     public final function xpath(): DOMXPath
@@ -249,128 +227,136 @@ class DomDocument extends _DOMDocument
     }
 
     /**
-     * Query.
+     * Run a XPath query returning a DOMNodeList or null if no matches.
+     *
      * @param  string       $query
      * @param  DOMNode|null $root
-     * @return ?DOMNodeList
+     * @return DOMNodeList|null
      * @throws froq\dom\DomException
      */
-    public final function query(string $query, DOMNode $root = null): ?DOMNodeList
+    public final function query(string $query, DOMNode $root = null): DOMNodeList|null
     {
         $query = trim($query);
-        if ($query == '') {
-            throw new DomException('Empty query given to "%s()", non-empty query required',
-                [__method__]);
-        }
+        $query || throw new DomException('Empty query given');
 
         $nodes = $this->xpath()->query($query, $root);
 
         if ($nodes && $nodes->length > 0) {
             return new NodeList($nodes);
         }
+
         return null;
     }
 
     /**
-     * Find.
+     * Run a "find" process return a DOMNode or null if no match.
+     *
      * @param  string       $query
      * @param  DOMNode|null $root
-     * @return ?DOMNode
+     * @return DOMNode|null
      */
-    public final function find(string $query, DOMNode $root = null): ?DOMNode
+    public final function find(string $query, DOMNode $root = null): DOMNode|null
     {
         $nodes = $this->query($query, $root);
 
-        return ($nodes && $nodes->count()) ? $nodes->item(0) : null;
+        return $nodes ? $nodes[0] : null;
     }
 
     /**
-     * Find all.
+     * Run a "find all" process return a DOMNodeList or null if no matches.
+     *
      * @param  string       $query
      * @param  DOMNode|null $root
-     * @return ?DOMNodeList
+     * @return DOMNodeList|null
      */
-    public final function findAll(string $query, DOMNode $root = null): ?DOMNodeList
+    public final function findAll(string $query, DOMNode $root = null): DOMNodeList|null
     {
         $nodes = $this->query($query, $root);
 
-        return ($nodes && $nodes->count()) ? $nodes : null;
+        return $nodes ? $nodes : null;
     }
 
     /**
-     * Find by id.
+     * Run a "find by id" process return a DOMNode or null if no match.
+     *
      * @param  string $id
-     * @return ?DOMNode
+     * @return DOMNode|null
      */
-    public final function findById(string $id): ?DOMNode
+    public final function findById(string $id): DOMNode|null
     {
         return $this->find("//*[@id='{$id}']");
     }
 
     /**
-     * Find by name.
+     * Run a "find by name" process return a DOMNode or null if no match.
+     *
      * @param  string $name
-     * @return ?DOMNode
+     * @return DOMNode|null
      */
-    public final function findByName(string $name): ?DOMNode
+    public final function findByName(string $name): DOMNode|null
     {
         return $this->find("//*[@name='{$name}']");
     }
 
     /**
-     * Find by tag.
+     * Run a "find by tag" process return a DOMNodeList or null if no matches.
+     *
      * @param  string       $tag
      * @param  DOMNode|null $root
-     * @return ?DOMNodeList
+     * @return DOMNodeList|null
      */
-    public final function findByTag(string $tag, DOMNode $root = null): ?DOMNodeList
+    public final function findByTag(string $tag, DOMNode $root = null): DOMNodeList|null
     {
         return ($root == null) // Root needs (.) first in query.
-            ? $this->findAll("//{$tag}")
-            : $this->findAll(".//{$tag}", $root);
+             ? $this->findAll("//{$tag}")
+             : $this->findAll(".//{$tag}", $root);
     }
 
     /**
-     * Find by class.
+     * Run a "find by class" process return a DOMNodeList or null if no matches.
+     *
      * @param  string       $class
      * @param  DOMNode|null $root
-     * @return ?DOMNodeList
+     * @return DOMNodeList|null
      */
-    public final function findByClass(string $class, DOMNode $root = null): ?DOMNodeList
+    public final function findByClass(string $class, DOMNode $root = null): DOMNodeList|null
     {
         return ($root == null) // Root needs (.) first in query.
-            ? $this->findAll("//*[contains(@class, '{$class}')]")
-            : $this->findAll(".//*[contains(@class, '{$class}')]", $root);
+             ? $this->findAll("//*[contains(@class, '{$class}')]")
+             : $this->findAll(".//*[contains(@class, '{$class}')]", $root);
     }
 
     /**
-     * Find by attribute.
+     * Run a "find by attribute" process return a DOMNodeList or null if no matches.
+     *
      * @param  string       $name
      * @param  string|null  $value
      * @param  DOMNode|null $root
-     * @return ?DOMNodeList
+     * @return DOMNodeList|null
      */
-    public final function findByAttribute(string $name, string $value = null, DOMNode $root = null): ?DOMNodeList
+    public final function findByAttribute(string $name, string $value = null, DOMNode $root = null): DOMNodeList|null
     {
         if ($value === null) {
             return ($root == null) // Root needs (.) first in query.
-                ? $this->findAll("//*[@{$name}]")
-                : $this->findAll(".//*[@{$name}]", $root);
+                 ? $this->findAll("//*[@{$name}]")
+                 : $this->findAll(".//*[@{$name}]", $root);
         } else {
             $value = addcslashes($value, '"');
 
             return ($root == null) // Root needs (.) first in query.
-                ? $this->findAll("//*[@{$name}='{$value}']")
-                : $this->findAll(".//*[@{$name}='{$value}']", $root);
+                 ? $this->findAll("//*[@{$name}='{$value}']")
+                 : $this->findAll(".//*[@{$name}='{$value}']", $root);
         }
     }
 
     /**
-     * Parse url.
+     * Prepare validating given URL.
+     *
      * @param  string $url
-     * @return ?string
+     * @return string|null
+     * @internal
      */
-    private static final function prepareUrl(string $url): ?string
+    private static function prepareUrl(string $url): string|null
     {
         preg_match('~^(?:(?<scheme>\w+://|//))?
                       (?:(?<host>[\w\.\-]+\.\w{2,}))
@@ -388,5 +374,3 @@ class DomDocument extends _DOMDocument
         return $match['scheme'] . $match['host'] . $match['rest'];
     }
 }
-
-})();

@@ -1,58 +1,45 @@
 <?php
 /**
- * MIT License <https://opensource.org/licenses/mit>
- *
- * Copyright (c) 2015 Kerem Güneş
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
- * to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * Copyright (c) 2015 · Kerem Güneş
+ * Apache License 2.0 · http://github.com/froq/froq-dom
  */
 declare(strict_types=1);
 
 namespace froq\dom;
 
-use froq\dom\{DomDocument, Document, XmlDocument, HtmlDocument};
+use froq\dom\{Document, DomDocument, XmlDocument, HtmlDocument};
+use DOMNode;
 
 /**
  * Dom.
+ *
+ * Represents a factory entity for XmlDocument/HtmlDocument classes, and contains a parser method for parsing
+ * XML documents.
+ *
  * @package froq\dom
  * @object  froq\dom\Dom
- * @author  Kerem Güneş <k-gun@mail.com>
+ * @author  Kerem Güneş
  * @since   3.0
  * @static
  */
 final class Dom
 {
     /**
-     * Create xml document.
+     * Create an XML document.
+     *
      * @param  array|null  $data
-     * @param  string|null $xmlVersion
-     * @param  string|null $xmlEncoding
+     * @param  string|null $version
+     * @param  string|null $encoding
      * @return froq\dom\XmlDocument
      */
-    public static function createXmlDocument(array $data = null, string $xmlVersion = null,
-        string $xmlEncoding = null): XmlDocument
+    public static function createXmlDocument(array $data = null, string $version = null, string $encoding = null): XmlDocument
     {
-        return new XmlDocument($data, $xmlVersion, $xmlEncoding);
+        return new XmlDocument($data, $version, $encoding);
     }
 
     /**
-     * Create html document.
+     * Create an HTML document.
+     *
      * @param  array|null $data
      * @return froq\dom\HtmlDocument
      */
@@ -62,46 +49,31 @@ final class Dom
     }
 
     /**
-     * Parse xml.
-     * @param  any        $xml
-     * @param  array|null $options
-     * @return any|null
+     * Parse XML string or DOMNode.
+     *
+     * @param  string|DOMNode $xml
+     * @param  array|null     $options
+     * @return array|object|string|null
      */
-    public static function parseXml($xml, array $options = null)
+    public static function parseXml(string|DOMNode $xml, array $options = null): array|object|string|null
     {
         if ($xml === '')   return null;
         if ($xml === null) return null;
 
         $root = $xml;
-        static $error, $xmlProperties, $toObject;
 
         if (is_string($root)) {
             $root = new DomDocument();
-            $root->loadXml($xml, $options);
+            $root->loadXmlSource($xml, $options);
         }
 
         $ret = [];
 
-        // Some speed...
-        if ($xmlProperties === null) {
-            $xmlProperties = [];
-            if ($root->nodeType == XML_DOCUMENT_NODE) {
-                // Add real root tag, not #document.
-                $xmlProperties['@root'] = $root->firstChild->tagName ?? null;
-                $xmlProperties['@error'] = $error ?: null;
-                $xmlProperties['version'] = $root->xmlVersion;
-                $xmlProperties['encoding'] = $root->xmlEncoding;
-            }
-            $ret['@xml'] = $xmlProperties;
-        }
-        if ($toObject === null) {
-            $toObject = function ($input) use (&$toObject) {
-                $input = (object) $input;
-                foreach ($input as $key => $value) {
-                    $input->{$key} = is_array($value) ? $toObject($value) : $value;
-                }
-                return $input;
-            };
+        if ($root->nodeType == XML_DOCUMENT_NODE) {
+            // Add real root tag, not #document.
+            $ret['@xml']['@root']    = $root->firstChild->nodeName ?? null;
+            $ret['@xml']['version']  = $root->version;
+            $ret['@xml']['encoding'] = $root->encoding;
         }
 
         if ($root->hasAttributes()) {
@@ -143,9 +115,9 @@ final class Dom
             $ret = $root->nodeValue;
         }
 
-        $assoc = $options['assoc'] ?? true;
-        if (!$assoc && is_array($ret)) {
-            $ret = $toObject($ret);
+        // Objectify.
+        if (!($options['assoc'] ?? true) && is_array($ret)) {
+            $ret = json_decode(json_encode($ret));
         }
 
         return $ret;

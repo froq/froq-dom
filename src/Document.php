@@ -1,38 +1,23 @@
 <?php
 /**
- * MIT License <https://opensource.org/licenses/mit>
- *
- * Copyright (c) 2015 Kerem Güneş
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
- * to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * Copyright (c) 2015 · Kerem Güneş
+ * Apache License 2.0 · http://github.com/froq/froq-dom
  */
 declare(strict_types=1);
 
 namespace froq\dom;
 
-use froq\common\interfaces\Stringable;
+use froq\dom\DomException;
+use froq\common\interface\Stringable;
 
 /**
  * Document.
+ *
+ * Represents a base document entity for XmlDocument/HtmlDocument classes.
+ *
  * @package froq\dom
  * @object  froq\dom\Document
- * @author  Kerem Güneş <k-gun@mail.com>
+ * @author  Kerem Güneş
  * @since   3.0
  */
 class Document implements Stringable
@@ -44,70 +29,45 @@ class Document implements Stringable
     public const TYPE_XML  = 'xml',
                  TYPE_HTML = 'html';
 
-    /**
-     * Xml version & encoding.
-     * @const string
-     */
-    public const XML_VERSION  = '1.0',
-                 XML_ENCODING = 'utf-8';
-
-    /**
-     * Type.
-     * @var string
-     */
+    /** @var string */
     protected string $type;
 
-    /**
-     * Data.
-     * @var array
-     */
+    /** @var array */
     protected array $data;
 
     /**
-     * Xml version.
-     * @var string
-     */
-    protected string $xmlVersion;
-
-    /**
-     * Xml encoding.
-     * @var string
-     */
-    protected string $xmlEncoding;
-
-    /**
      * Constructor.
-     * @param string      $type
-     * @param array|null  $data
-     * @param string|null $xmlVersion
-     * @param string|null $xmlEncoding
+     *
+     * @param string     $type
+     * @param array|null $data
      */
-    public function __construct(string $type, array $data = null,
-                                string $xmlVersion = null, string $xmlEncoding = null)
+    public function __construct(string $type, array $data = null)
     {
         $this->setType($type);
         $this->setData($data ?? []);
-
-        if ($type == self::TYPE_XML) {
-            $this->setXmlVersion($xmlVersion ?: self::XML_VERSION);
-            $this->setXmlEncoding($xmlEncoding ?: self::XML_ENCODING);
-        }
     }
 
     /**
-     * Set type.
+     * Set document type.
+     *
      * @param  string $type
      * @return self
+     * @throws froq\dom\DomException
      */
     public final function setType(string $type): self
     {
-        $this->type = strtolower($type);
+        if ($type != self::TYPE_XML && $type != self::TYPE_HTML) {
+            throw new DomException('Invalid type %s, valids are: xml, html', $type);
+        }
+
+        $this->type = $type;
 
         return $this;
     }
 
     /**
-     * Get type.
+     * Get document type.
+     *
      * @return string
      */
     public final function getType(): string
@@ -116,7 +76,8 @@ class Document implements Stringable
     }
 
     /**
-     * Set data.
+     * Set document data.
+     *
      * @param  array $data
      * @return self
      */
@@ -128,7 +89,8 @@ class Document implements Stringable
     }
 
     /**
-     * Get data.
+     * Get document data.
+     *
      * @return array
      */
     public final function getData(): array
@@ -137,61 +99,18 @@ class Document implements Stringable
     }
 
     /**
-     * Set xml version.
-     * @param  string $xmlVersion
-     * @return self
-     */
-    public final function setXmlVersion(string $xmlVersion): self
-    {
-        $this->xmlVersion = $xmlVersion;
-
-        return $this;
-    }
-
-    /**
-     * Get xml version.
-     * @return ?string
-     */
-    public final function getXmlVersion(): ?string
-    {
-        return $this->xmlVersion ?? null;
-    }
-
-    /**
-     * Set xml encoding.
-     * @param  string $xmlEncoding
-     * @return self
-     */
-    public final function setXmlEncoding(string $xmlEncoding): self
-    {
-        $this->xmlEncoding = $xmlEncoding;
-
-        return $this;
-    }
-
-    /**
-     * Get xml encoding.
-     * @return ?string
-     */
-    public final function getXmlEncoding(): ?string
-    {
-        return $this->xmlEncoding ?? null;
-    }
-
-    /**
-     * @inheritDoc froq\common\interfaces\Stringable
+     * @inheritDoc froq\common\interface\Stringable
      *
-     * @param      bool   $indent
-     * @param      string $indentString
-     * @return     string
-     * @throws     froq\dom\DomException
+     * @param  bool   $indent
+     * @param  string $indentString
+     * @return string
+     * @throws froq\dom\DomException
      */
     public final function toString(bool $indent = false, string $indentString = "\t"): string
     {
         $newLine = "\n";
         if (!$indent) {
-            $newLine = '';
-            $indentString = '';
+            $newLine = $indentString = '';
         }
 
         $ret = '';
@@ -199,21 +118,18 @@ class Document implements Stringable
         if ($this->type == self::TYPE_HTML) {
             $ret = '<!DOCTYPE html>'. $newLine;
         } elseif ($this->type == self::TYPE_XML) {
-            $ret = '<?xml version="'. $this->xmlVersion .'" encoding="'. $this->xmlEncoding .'"?>'. $newLine;
+            $ret = '<?xml version="'. $this->version .'" encoding="'. $this->encoding .'"?>'. $newLine;
         }
-        $root = $this->data['@root'] ?? null;
-        if ($root == null) {
-            throw new DomException('Invalid document data, no @root field found in given data');
-        }
+
+        $root = (array) ($this->data['@root'] ?? null);
+        $root || throw new DomException('Invalid document data, no @root field found in given data');
 
         // Eg: [name, content?, @nodes?, @attributes?, @selfClosing?].
-        @ [$rootName, $rootContent] = $root;
-        if ($rootName == null) {
-            throw new DomException('Invalid document data, no @root tag field found in given data');
-        }
+        [$rootName, $rootContent] = array_select($root, [0, 1]);
+        $rootName || throw new DomException('Invalid document data, no @root tag field found in given data');
 
-        $nodes = $root['@nodes'] ?? null;
-        $attributes = $root['@attributes'] ?? null;
+        $nodes       = $root['@nodes']       ?? null;
+        $attributes  = $root['@attributes']  ?? null;
         $selfClosing = $root['@selfClosing'] ?? false; // Not usual but valid.
 
         // Open root tag.
@@ -230,11 +146,10 @@ class Document implements Stringable
             $ret .= ">";
 
             if ($rootContent !== null && $rootContent !== '') {
-                if (!is_scalar($rootContent)) {
-                    $rootContent = json_encode($rootContent);
-                }
+                $rootContent = json_encode($rootContent, JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION);
+
                 // Escape (<,>).
-                $rootContent = str_replace(['<', '>'], ['&lt;', '&gt;'], $rootContent);
+                $rootContent = str_replace(['<', '>'], ['&lt;', '&gt;'], trim($rootContent, '"'));
 
                 $ret .= $newLine . $indentString . $rootContent;
                 if ($nodes == null) {
@@ -265,20 +180,21 @@ class Document implements Stringable
     }
 
     /**
-     * Generate node string.
+     * Generate node string from a node.
+     *
      * @param  array  $node
      * @param  string $newLine
      * @param  string $indentString
      * @param  int    $indentCount @internal
      * @return string
      */
-    private final function generateNodeString(array $node, string $newLine = '',
-        string $indentString = '', int $indentCount = 1): string
+    private function generateNodeString(array $node, string $newLine = '', string $indentString = '',
+        int $indentCount = 1): string
     {
         // Eg: [name, content?, @nodes?, @attributes?, @selfClosing?].
-        @ [$name, $content] = $node;
-        $nodes = $node['@nodes'] ?? null;
-        $attributes = $node['@attributes'] ?? null;
+        [$name, $content] = array_select($node, [0, 1]);
+        $nodes       = $node['@nodes']       ?? null;
+        $attributes  = $node['@attributes']  ?? null;
         $selfClosing = $node['@selfClosing'] ?? false;
 
         // Open tag.
@@ -295,11 +211,10 @@ class Document implements Stringable
             $ret .= ">";
 
             if ($content !== null && $content !== '') {
-                if (!is_scalar($content)) {
-                    $content = json_encode($content);
-                }
+                $content = json_encode($content, JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION);
+
                 // Escape (<,>).
-                $content = str_replace(['<', '>'], ['&lt;', '&gt;'], $content);
+                $content = str_replace(['<', '>'], ['&lt;', '&gt;'], trim($content, '"'));
 
                 if ($nodes == null) {
                     $ret .= $content;
@@ -335,39 +250,38 @@ class Document implements Stringable
     }
 
     /**
-     * Generate attribute string.
+     * Generate attribute string from an attribute.
+     *
      * @param  array $attributes
      * @return string
      * @throws froq\dom\DomException
      */
-    private final function generateAttributeString(array $attributes): string
+    private function generateAttributeString(array $attributes): string
     {
         $ret = '';
 
         // Validate name (@see http://www.w3.org/TR/2008/REC-xml-20081126/#NT-Name).
         static $notAllowedChars = '\'"=';
         static $namePattern = '~^
-            [a-zA-Z_]+(?:[a-zA-Z0-9-_]+)?(?:(?:[:]+)?[a-zA-Z0-9-_:]+)? # name(..)
-          | [:][a-zA-Z0-9-_:]*                                         # name:(..)
+            [a-zA-Z_]+(?:[a-zA-Z0-9-_]+)?(?:(?:[:]+)?[a-zA-Z0-9-_:]+)? # name..
+          | [:][a-zA-Z0-9-_:]*                                         # name:..
         $~x';
 
         foreach ($attributes as $name => $value) {
             $name = (string) $name;
 
             if (strpbrk($name, $notAllowedChars) !== false) {
-                throw new DomException("No valid attribute name '{$name}' given (tip: don't use ".
-                    "these characters '{$notAllowedChars}' in name)");
+                throw new DomException('No valid attribute name `%s` given [tip: don\'t use'
+                    . ' these characters `%s` in name]', [$name, $notAllowedChars]);
             } elseif (!preg_match($namePattern, $name)) {
-                throw new DomException("No valid attribute name '{$name}' given (tip: use a name ".
-                    "that matches with '{$namePattern}'");
+                throw new DomException('No valid attribute name `%s` given [tip: use a name'
+                    . ' that matches with `%s`', [$name, $namePattern]);
             }
 
-            if (!is_scalar($value)) {
-                $value = json_encode($value);
-            }
+            $value = json_encode($value, JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION);
 
             // Escape (").
-            $value = str_replace('"', '&#34;', $value);
+            $value = str_replace('"', '&#34;', trim($value, '"'));
 
             $ret .= " {$name}=\"{$value}\"";
         }

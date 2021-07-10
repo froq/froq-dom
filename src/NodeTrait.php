@@ -1,26 +1,7 @@
 <?php
 /**
- * MIT License <https://opensource.org/licenses/mit>
- *
- * Copyright (c) 2015 Kerem Güneş
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
- * to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * Copyright (c) 2015 · Kerem Güneş
+ * Apache License 2.0 · http://github.com/froq/froq-dom
  */
 declare(strict_types=1);
 
@@ -29,20 +10,22 @@ namespace froq\dom;
 use froq\dom\{NodeList, Document};
 use DOMNode, DOMNodeList;
 
-// Suppress useless 'Declaration of ...' warnings.
-@(function () {
-
 /**
  * Node Trait.
+ *
+ * Represents a trait entity that provides some utility methods to DomDocument/DomElement classes.
+ *
  * @package froq\dom
  * @object  froq\dom\NodeTrait
- * @author  Kerem Güneş <k-gun@mail.com>
+ * @author  Kerem Güneş
  * @since   4.0
+ * @internal
  */
 trait NodeTrait
 {
     /**
-     * Tag.
+     * Get node tag.
+     *
      * @return string
      */
     public function tag(): string
@@ -51,7 +34,8 @@ trait NodeTrait
     }
 
     /**
-     * Path.
+     * Get node path.
+     *
      * @return string
      */
     public function path(): string
@@ -60,10 +44,11 @@ trait NodeTrait
     }
 
     /**
-     * Text.
-     * @return ?string
+     * Get text contents.
+     *
+     * @return string|null
      */
-    public function text(): ?string
+    public function text(): string|null
     {
         $text = trim($this->textContent);
 
@@ -71,11 +56,12 @@ trait NodeTrait
     }
 
     /**
-     * Html.
+     * Get HTML contents.
+     *
      * @param  bool $outer
-     * @return ?string
+     * @return string|null
      */
-    public function html(bool $outer = false): ?string
+    public function html(bool $outer = false): string|null
     {
         // Also a document ($this) may be given.
         $doc = $this->ownerDocument ?? $this;
@@ -103,17 +89,18 @@ trait NodeTrait
     }
 
     /**
-     * Attribute.
+     * Get an attribute.
+     *
      * @param  string $name
      * @param  bool   $useBaseUrl
-     * @return ?string
+     * @return string|null
      */
-    public function attribute(string $name, bool $useBaseUrl = false): ?string
+    public function attribute(string $name, bool $useBaseUrl = false): string|null
     {
         // Prevent returning "" from non-exist attributes.
         $value = $this->getAttribute($name);
 
-        if ($value != null && $useBaseUrl) {
+        if ($value != '' && $useBaseUrl) {
             static $tags = ['a', 'img', 'link', 'iframe', 'audio', 'video', 'area',
                 'track', 'embed', 'source', 'area', 'object'];
 
@@ -122,12 +109,9 @@ trait NodeTrait
                 $baseUrlParts = parse_url($baseUrl);
 
                 if (isset($baseUrlParts['scheme'], $baseUrlParts['host'])) {
-                    // Use root for links that starts with "/".
-                    if ($value[0] == '/') {
-                        $value = $baseUrlParts['scheme'] .'://'. $baseUrlParts['host'] . $value;
-                    } else {
-                        $value = $baseUrl . $value;
-                    }
+                    $value = ($value[0] == '/') // Use root for links that starts with "/".
+                        ? $baseUrlParts['scheme'] .'://'. $baseUrlParts['host'] . $value
+                        : $baseUrl . $value;
                 }
             }
         }
@@ -136,61 +120,65 @@ trait NodeTrait
     }
 
     /**
-     * Attributes.
-     * @return ?array
+     * Get all attributes.
+     *
+     * @return array|null
      */
-    public function attributes(): ?array
+    public function attributes(): array|null
     {
         if ($this->hasAttributes()) {
             foreach ($this->attributes as $attribute) {
                 $attributes[$attribute->name] = $attribute->value;
             }
+
+            return $attributes;
         }
 
-        return $attributes ?? null;
+        return null;
     }
 
     /**
-     * Content.
-     * @return ?string
+     * Get content value.
+     *
+     * @return string|null
      */
-    public function value(): ?string
+    public function value(): string|null
     {
         switch ($this->tag()) {
-            case 'meta':
-                return $this->getAttribute('content');
             case 'input':
                 $type = $this->getAttribute('type');
-                if (($type == 'radio' || $type == 'checkbox')) {
-                    return $this->hasAttribute('value')
-                        ? $this->getAttribute('value') : null;
+                if ($type == 'radio' || $type == 'checkbox') {
+                    return $this->hasAttribute('checked')
+                         ? $this->getAttribute('value') : null;
                 }
                 return $this->getAttribute('value');
             case 'option':
                 return $this->hasAttribute('selected')
-                    ? $this->getAttribute('value') : null;
+                     ? $this->getAttribute('value') : null;
             case 'select':
-                $options = $this->findAll('//option[@value][@selected]');
-                return ($options && $options->count())
-                    ? $options->first()->getAttribute('value') : null;
-            case 'img': case 'iframe':
-            case 'audio': case 'video':
-            case 'track': case 'embed': case 'source':
+                return ($option = $this->find('//option[@value][@selected]'))
+                     ? $option->getAttribute('value') : null;
+            case 'img': case 'image': case 'iframe':
+            case 'audio': case 'video': case 'track':
+            case 'embed': case 'source':
                 return $this->getAttribute('src');
             case 'data': case 'meter':
                 return $this->getAttribute('value');
             case 'time':
                 return $this->getAttribute('datetime');
+            case 'meta':
+                return $this->getAttribute('content');
         }
 
         return $this->text();
     }
 
     /**
-     * Prev.
-     * @return ?DOMNode
+     * Get prev node.
+     *
+     * @return DOMNode|null
      */
-    public function prev(): ?DOMNode
+    public function prev(): DOMNode|null
     {
         $prev = $this->previousSibling;
 
@@ -205,12 +193,14 @@ trait NodeTrait
     }
 
     /**
-     * Prev all.
-     * @return ?DOMNodeList
+     * Get all prev nodes.
+     *
+     * @return DOMNodeList|null
      */
-    public function prevAll(): ?DOMNodeList
+    public function prevAll(): DOMNodeList|null
     {
-        $prev = $this->previousSibling; $prevs = [];
+        $prev = $this->previousSibling;
+        $prevs = [];
 
         while ($prev) {
             if ($prev->nodeType == XML_ELEMENT_NODE) {
@@ -223,10 +213,11 @@ trait NodeTrait
     }
 
     /**
-     * Next.
-     * @return ?DOMNode
+     * Get next node.
+     *
+     * @return DOMNode|null
      */
-    public function next(): ?DOMNode
+    public function next(): DOMNode|null
     {
         $next = $this->nextSibling;
 
@@ -241,12 +232,14 @@ trait NodeTrait
     }
 
     /**
-     * Next all.
-     * @return ?DOMNodeList
+     * Get all next nodes.
+     *
+     * @return DOMNodeList|null
      */
-    public function nextAll(): ?DOMNodeList
+    public function nextAll(): DOMNodeList|null
     {
-        $next = $this->nextSibling; $nexts = [];
+        $next = $this->nextSibling;
+        $nexts = [];
 
         while ($next) {
             if ($next->nodeType == XML_ELEMENT_NODE) {
@@ -259,41 +252,44 @@ trait NodeTrait
     }
 
     /**
-     * Parent.
-     * @return ?DOMNode
+     * Get parent node.
+     *
+     * @return DOMNode|null
      */
-    public function parent(): ?DOMNode
+    public function parent(): DOMNode|null
     {
-        $parents = $this->parents();
-
-        return $parents[0] ?? null;
+        return $this->parents(1)[0] ?? null;
     }
 
     /**
-     * Parents.
-     * @return ?DOMNode
+     * Get all parents.
+     *
+     * @param  int|null $limit
+     * @return DOMNodeList|null
      */
-    public function parents(): ?DOMNodeList
+    public function parents(int $limit = null): DOMNodeList|null
     {
         static $parentTypes = [XML_ELEMENT_NODE, XML_DOCUMENT_NODE, XML_HTML_DOCUMENT_NODE];
 
-        $parent = $this->parentNode;
-        $parents = [];
+        [$parents, $parent, $i] = [[], $this->parentNode, 1];
 
         while ($parent && in_array($parent->nodeType, $parentTypes, true)) {
-            $parents[] = $parent;
-            $parent = $parent->parentNode;
+            [$parents[], $parent] = [$parent, $parent->parentNode];
+            if ($limit && $i++ >= $limit) {
+                break;
+            }
         }
 
         return $parents ? new NodeList($parents) : null;
     }
 
     /**
-     * Child.
+     * Get a child node.
+     *
      * @param  int $i
-     * @return ?DOMNode
+     * @return DOMNode|null
      */
-    public function child(int $i): ?DOMNode
+    public function child(int $i): DOMNode|null
     {
         $children = $this->children();
 
@@ -301,10 +297,11 @@ trait NodeTrait
     }
 
     /**
-     * Children.
-     * @return ?DOMNodeList
+     * Get all children.
+     *
+     * @return DOMNodeList|null
      */
-    public function children(): ?DOMNodeList
+    public function children(): DOMNodeList|null
     {
         $nodes = [];
 
@@ -322,11 +319,9 @@ trait NodeTrait
     /**
      * @override
      */
-    public function getAttribute(string $name): ?string
+    public function getAttribute(string $name): string|null
     {
         // Prevent returning "" from non-exist attributes.
         return parent::hasAttribute($name) ? parent::getAttribute($name) : null;
     }
 }
-
-})();
