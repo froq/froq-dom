@@ -9,6 +9,7 @@ namespace froq\dom;
 
 use froq\dom\DomException;
 use froq\common\interface\Arrayable;
+use froq\util\Arrays;
 use DOMNode, DOMNodeList, IteratorAggregate, ArrayAccess, ArrayIterator, Traversable, Iterator;
 
 /**
@@ -108,7 +109,7 @@ final class NodeList extends DOMNodeList implements Arrayable, ArrayAccess, Iter
      */
     public function each(callable $func): self
     {
-        each($this->items, $func);
+        Arrays::each($this->items, $func);
 
         return $this;
     }
