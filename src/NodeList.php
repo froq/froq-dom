@@ -100,14 +100,28 @@ final class NodeList extends DOMNodeList implements Arrayable, ArrayAccess, Iter
     }
 
     /**
+     * Call given function for each item of node list.
+     *
+     * @param  callable $func
+     * @return self
+     * @since  5.1
+     */
+    public function each(callable $func): self
+    {
+        each($this->items, $func);
+
+        return $this;
+    }
+
+    /**
      * Filter node list.
      *
-     * @param  callable $call
+     * @param  callable $func
      * @return self
      */
-    public function filter(callable $call): self
+    public function filter(callable $func): self
     {
-        $this->items = array_filter($this->items, $call);
+        $this->items = array_filter($this->items, $func);
 
         return $this;
     }
@@ -115,12 +129,12 @@ final class NodeList extends DOMNodeList implements Arrayable, ArrayAccess, Iter
     /**
      * Map node list.
      *
-     * @param  callable $call
+     * @param  callable $func
      * @return self
      */
-    public function map(callable $call): self
+    public function map(callable $func): self
     {
-        $this->items = array_map($call, $this->items);
+        $this->items = array_map($func, $this->items);
 
         return $this;
     }
