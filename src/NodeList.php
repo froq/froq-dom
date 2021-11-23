@@ -10,7 +10,7 @@ namespace froq\dom;
 use froq\dom\DomException;
 use froq\common\interface\Arrayable;
 use froq\util\Arrays;
-use DOMNode, DOMNodeList, IteratorAggregate, ArrayAccess, ArrayIterator, Traversable, Iterator;
+use DOMNode, DOMNodeList, IteratorAggregate, ArrayAccess, ArrayIterator, Traversable;
 
 /**
  * Node List.
@@ -28,9 +28,6 @@ final class NodeList extends DOMNodeList implements Arrayable, ArrayAccess, Iter
     /** @var array<DOMNode> */
     private array $items = [];
 
-    /** @var int */
-    private int $count = 0;
-
     /**
      * Constructor.
      * @param array<DOMNode>|Traversable $items
@@ -45,7 +42,6 @@ final class NodeList extends DOMNodeList implements Arrayable, ArrayAccess, Iter
             );
 
             $this->items[] = $item;
-            $this->count++;
         }
     }
 
@@ -56,7 +52,7 @@ final class NodeList extends DOMNodeList implements Arrayable, ArrayAccess, Iter
      */
     public function length(): int
     {
-        return $this->count;
+        return $this->count();
     }
 
     /**
@@ -97,7 +93,7 @@ final class NodeList extends DOMNodeList implements Arrayable, ArrayAccess, Iter
      */
     public function last(): DOMNode|null
     {
-        return $this->item($this->count - 1);
+        return $this->item($this->count() - 1);
     }
 
     /**
@@ -157,7 +153,7 @@ final class NodeList extends DOMNodeList implements Arrayable, ArrayAccess, Iter
      */
     public function toArray(): array
     {
-        return $this->items();
+        return $this->items;
     }
 
     /**
@@ -165,13 +161,13 @@ final class NodeList extends DOMNodeList implements Arrayable, ArrayAccess, Iter
      */
     public function count(): int
     {
-        return $this->count;
+        return count($this->items());
     }
 
     /**
      * @inheritDoc IteratorAggregate
      */
-    public function getIterator(): Iterator
+    public function getIterator(): iterable
     {
         return new ArrayIterator($this->items);
     }
