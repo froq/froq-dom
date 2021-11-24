@@ -7,13 +7,13 @@ declare(strict_types=1);
 
 namespace froq\dom;
 
-use froq\dom\{DomException, NodeTrait};
-use DOMNode, DOMNodeList, DOMElement as _DOMElement;
+use froq\dom\{DomException, NodeTrait, NodeFindTrait};
+use DOMElement as _DOMElement;
 
 /**
  * Dom Element.
  *
- * Represents a read-only DOM element entity that provides a DOMElement structure with additional
+ * Represents a read-only DOM element class that provides a DOMElement structure with additional
  * utility methods such find(), findAll() etc. and NodeTrait methods, for querying nodes via XPath
  * utilities.
  *
@@ -25,25 +25,39 @@ use DOMNode, DOMNodeList, DOMElement as _DOMElement;
 class DomElement extends _DOMElement
 {
     /** @see froq\dom\NodeTrait */
-    use NodeTrait;
+    /** @see froq\dom\NodeFindTrait @since 5.2 */
+    use NodeTrait, NodeFindTrait;
 
     /**
-     * Magic - call: proxy method for finder methods of owner document.
+     * Get id attribute.
      *
-     * @param  string $method
-     * @param  array  $methodArgs
-     * @return DOMNode|DOMNodeList|null
-     * @throws froq\dom\DomException
+     * @return string|null
+     * @since  5.2
      */
-    public function __call(string $method, array $methodArgs): DOMNode|DOMNodeList|null
+    public function id(): string|null
     {
-        static $methods = ['find', 'findAll', 'findByTag', 'findByClass', 'findByAttribute'];
+        return $this->getAttribute('id');
+    }
 
-        if (in_array($method, $methods)) {
-            return call_user_func_array([$this->ownerDocument, $method], [$methodArgs[0], $this]);
-        }
+    /**
+     * Get name attribute.
+     *
+     * @return string|null
+     * @since  5.2
+     */
+    public function name(): string|null
+    {
+        return $this->getAttribute('name');
+    }
 
-        throw new DomException('Invalid call as %s() on %s object, valids are: %s',
-            [$method, $this::class, join(', ', $methods)]);
+    /**
+     * Get class attribute.
+     *
+     * @return string|null
+     * @since  5.2
+     */
+    public function class(): string|null
+    {
+        return $this->getAttribute('class');
     }
 }

@@ -9,7 +9,8 @@
         "php": "^8.0",
         "ext-dom": "*",
         "ext-libxml": "*",
-        "froq/froq-common": "^5.0"
+        "froq/froq-common": "^5.0",
+        "froq/froq-collection": "^5.0"
     },
     "autoload": {
         "classmap": ["src/"]

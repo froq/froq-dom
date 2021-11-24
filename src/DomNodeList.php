@@ -9,36 +9,37 @@ namespace froq\dom;
 
 use froq\dom\DomException;
 use froq\common\interface\Arrayable;
-use froq\util\Arrays;
-use DOMNode, DOMNodeList, IteratorAggregate, ArrayAccess, ArrayIterator, Traversable;
+use froq\collection\iterator\{ArrayIterator, ReverseArrayIterator};
+use DOMNode, ArrayAccess, IteratorAggregate, Traversable;
 
 /**
- * Node List.
+ * Dom Node List.
  *
- * Represents a read-only node list entity that provides a DOMNodeList structure with additional
- * utility methods such map(), filter() and toArray().
+ * Represents a node list class that provides an extended `DOMNodeList` structure with additional
+ * utility methods.
  *
  * @package froq\dom
- * @object  froq\dom\NodeList
+ * @object  froq\dom\DomNodeList
  * @author  Kerem Güneş
- * @since   4.0
+ * @since   4.0, 5.2 Move as "DomNodeList" from "NodeList".
  */
-final class NodeList extends DOMNodeList implements Arrayable, ArrayAccess, IteratorAggregate
+class DomNodeList implements Arrayable, ArrayAccess, IteratorAggregate
 {
     /** @var array<DOMNode> */
-    private array $items = [];
+    protected array $items = [];
 
     /**
      * Constructor.
-     * @param array<DOMNode>|Traversable $items
+     *
+     * @param  array<DOMNode>|Traversable<DOMNode> $items
      * @throws froq\dom\DomException
      */
     public function __construct(array|Traversable $items)
     {
+        // We accept only DOMNode's here.
         foreach ($items as $item) {
-            // We accept only dom nodes here.
             ($item instanceof DOMNode) || throw new DomException(
-                'Each item must be a DOMNode, %s given', get_type($item)
+                'Each item must be a %s, %s given', [DOMNode::class, get_type($item)]
             );
 
             $this->items[] = $item;
@@ -46,11 +47,9 @@ final class NodeList extends DOMNodeList implements Arrayable, ArrayAccess, Iter
     }
 
     /**
-     * Since $length property is not writeable, this method simulates it.
-     *
-     * @return int
+     * @alias of count()
      */
-    public function length(): int
+    public function length()
     {
         return $this->count();
     }
@@ -105,7 +104,7 @@ final class NodeList extends DOMNodeList implements Arrayable, ArrayAccess, Iter
      */
     public function each(callable $func): self
     {
-        Arrays::each($this->items, $func);
+        each($this->items, $func);
 
         return $this;
     }
@@ -167,25 +166,33 @@ final class NodeList extends DOMNodeList implements Arrayable, ArrayAccess, Iter
     /**
      * @inheritDoc IteratorAggregate
      */
-    public function getIterator(): iterable
+    public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->items);
     }
 
     /**
-     * @inheritDoc ArrayAccess
+     * @since 5.2
      */
-    public function offsetGet($i): DOMNode|null
+    public function getReverseIterator(): ReverseArrayIterator
     {
-        return $this->item($i);
+        return new ReverseArrayIterator($this->items);
     }
 
     /**
      * @inheritDoc ArrayAccess
      */
-    public function offsetExists($i): bool
+    public function offsetExists($i)
     {
         return $this->item($i) != null;
+    }
+
+    /**
+     * @inheritDoc ArrayAccess
+     */
+    public function offsetGet($i)
+    {
+        return $this->item($i);
     }
 
     /**
@@ -193,7 +200,7 @@ final class NodeList extends DOMNodeList implements Arrayable, ArrayAccess, Iter
      *
      * @throws froq\dom\DomException
      */
-    public function offsetSet($i, $node): void
+    public function offsetSet($i, $node)
     {
         throw new DomException('Cannot modify read-only object ' . self::class);
     }
@@ -203,7 +210,7 @@ final class NodeList extends DOMNodeList implements Arrayable, ArrayAccess, Iter
      *
      * @throws froq\dom\DomException
      */
-    public function offsetUnset($i): void
+    public function offsetUnset($i)
     {
         throw new DomException('Cannot modify read-only object ' . self::class);
     }

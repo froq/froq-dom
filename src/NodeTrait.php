@@ -7,8 +7,8 @@ declare(strict_types=1);
 
 namespace froq\dom;
 
-use froq\dom\{NodeList, Document};
-use DOMNode, DOMNodeList;
+use froq\dom\{Document, DomNodeList};
+use DOMNode;
 
 /**
  * Node Trait.
@@ -176,9 +176,9 @@ trait NodeTrait
     /**
      * Get prev node.
      *
-     * @return DOMNode|null
+     * @return DomElement|null
      */
-    public function prev(): DOMNode|null
+    public function prev(): DomElement|null
     {
         $prev = $this->previousSibling;
 
@@ -195,9 +195,9 @@ trait NodeTrait
     /**
      * Get all prev nodes.
      *
-     * @return DOMNodeList|null
+     * @return DomElementList|null
      */
-    public function prevAll(): DOMNodeList|null
+    public function prevAll(): DomElementList|null
     {
         $prev = $this->previousSibling;
         $prevs = [];
@@ -209,15 +209,15 @@ trait NodeTrait
             $prev = $prev->previousSibling;
         }
 
-        return $prevs ? new NodeList($prevs) : null;
+        return $prevs ? new DomElementList($prevs) : null;
     }
 
     /**
      * Get next node.
      *
-     * @return DOMNode|null
+     * @return DomElement|null
      */
-    public function next(): DOMNode|null
+    public function next(): DomElement|null
     {
         $next = $this->nextSibling;
 
@@ -234,9 +234,9 @@ trait NodeTrait
     /**
      * Get all next nodes.
      *
-     * @return DOMNodeList|null
+     * @return DomElementList|null
      */
-    public function nextAll(): DOMNodeList|null
+    public function nextAll(): DomElementList|null
     {
         $next = $this->nextSibling;
         $nexts = [];
@@ -248,7 +248,7 @@ trait NodeTrait
             $next = $next->nextSibling;
         }
 
-        return $nexts ? new NodeList($nexts) : null;
+        return $nexts ? new DomElementList($nexts) : null;
     }
 
     /**
@@ -262,58 +262,62 @@ trait NodeTrait
     }
 
     /**
-     * Get all parents.
+     * Get all parents with/without given limit.
      *
      * @param  int|null $limit
-     * @return DOMNodeList|null
+     * @return DomNodeList|null
      */
-    public function parents(int $limit = null): DOMNodeList|null
+    public function parents(int $limit = null): DomNodeList|null
     {
-        static $parentTypes = [XML_ELEMENT_NODE, XML_DOCUMENT_NODE, XML_HTML_DOCUMENT_NODE];
+        $parent = $this->parentNode;
+        $parents = [];
+        $i = 0;
 
-        [$parents, $parent, $i] = [[], $this->parentNode, 1];
+        while ($parent) {
+            if ($parent->nodeType == XML_ELEMENT_NODE ||
+                $parent->nodeType == XML_DOCUMENT_NODE ||
+                $parent->nodeType == XML_HTML_DOCUMENT_NODE) {
+                $parents[] = $parent;
+            }
+            $parent = $parent->parentNode;
 
-        while ($parent && in_array($parent->nodeType, $parentTypes, true)) {
-            [$parents[], $parent] = [$parent, $parent->parentNode];
-            if ($limit && $i++ >= $limit) {
+            if ($limit && ++$i >= $limit) {
                 break;
             }
         }
 
-        return $parents ? new NodeList($parents) : null;
+        return $parents ? new DomNodeList($parents) : null;
     }
 
     /**
      * Get a child node.
      *
      * @param  int $i
-     * @return DOMNode|null
+     * @return DomElement|null
      */
-    public function child(int $i): DOMNode|null
+    public function child(int $i): DomElement|null
     {
-        $children = $this->children();
-
-        return $children[$i] ?? null;
+        return $this->children()[$i] ?? null;
     }
 
     /**
      * Get all children.
      *
-     * @return DOMNodeList|null
+     * @return DomElementList|null
      */
-    public function children(): DOMNodeList|null
+    public function children(): DomElementList|null
     {
-        $nodes = [];
+        $child = $this->firstChild;
+        $children = [];
 
-        if ($this->hasChildNodes()) {
-            foreach ($this->childNodes as $node) {
-                if ($node->nodeType == XML_ELEMENT_NODE) {
-                    $nodes[] = $node;
-                }
+        while ($child) {
+            if ($child->nodeType == XML_ELEMENT_NODE) {
+                $children[] = $child;
             }
+            $child = $child->nextSibling;
         }
 
-        return $nodes ? new NodeList($nodes) : null;
+        return $children ? new DomElementList($children) : null;
     }
 
     /**
