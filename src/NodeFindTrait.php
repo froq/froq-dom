@@ -43,7 +43,7 @@ trait NodeFindTrait
      *
      * @param  string       $query
      * @param  DOMNode|null $root
-     * @return DomNodeList|null
+     * @return froq\dom\DomNodeList|null
      */
     public final function findAll(string $query, DOMNode $root = null): DomNodeList|null
     {
@@ -57,7 +57,7 @@ trait NodeFindTrait
      *
      * @param  string       $tag
      * @param  DOMNode|null $root
-     * @return DomNodeList|null
+     * @return froq\dom\DomNodeList|null
      */
     public final function findByTag(string $tag, DOMNode $root = null): DomNodeList|null
     {
@@ -93,7 +93,7 @@ trait NodeFindTrait
      *
      * @param  string       $class
      * @param  DOMNode|null $root
-     * @return DomNodeList|null
+     * @return froq\dom\DomNodeList|null
      */
     public final function findByClass(string $class, DOMNode $root = null): DomNodeList|null
     {
@@ -108,7 +108,7 @@ trait NodeFindTrait
      * @param  string       $name
      * @param  string|null  $value
      * @param  DOMNode|null $root
-     * @return DomNodeList|null
+     * @return froq\dom\DomNodeList|null
      */
     public final function findByAttribute(string $name, string $value = null, DOMNode $root = null): DomNodeList|null
     {

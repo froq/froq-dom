@@ -176,7 +176,7 @@ trait NodeTrait
     /**
      * Get prev node.
      *
-     * @return DomElement|null
+     * @return froq\dom\DomElement|null
      */
     public function prev(): DomElement|null
     {
@@ -195,7 +195,7 @@ trait NodeTrait
     /**
      * Get all prev nodes.
      *
-     * @return DomElementList|null
+     * @return froq\dom\DomElementList|null
      */
     public function prevAll(): DomElementList|null
     {
@@ -215,7 +215,7 @@ trait NodeTrait
     /**
      * Get next node.
      *
-     * @return DomElement|null
+     * @return froq\dom\DomElement|null
      */
     public function next(): DomElement|null
     {
@@ -234,7 +234,7 @@ trait NodeTrait
     /**
      * Get all next nodes.
      *
-     * @return DomElementList|null
+     * @return froq\dom\DomElementList|null
      */
     public function nextAll(): DomElementList|null
     {
@@ -255,7 +255,7 @@ trait NodeTrait
      * Get a child node.
      *
      * @param  int $i
-     * @return DomElement|null
+     * @return froq\dom\DomElement|null
      */
     public function child(int $i): DomElement|null
     {
@@ -265,7 +265,7 @@ trait NodeTrait
     /**
      * Get all children.
      *
-     * @return DomElementList|null
+     * @return froq\dom\DomElementList|null
      */
     public function children(): DomElementList|null
     {
@@ -296,7 +296,7 @@ trait NodeTrait
      * Get all parents with/without given limit.
      *
      * @param  int|null $limit
-     * @return DomNodeList|null
+     * @return froq\dom\DomNodeList|null
      */
     public function parents(int $limit = null): DomNodeList|null
     {

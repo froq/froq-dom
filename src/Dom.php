@@ -122,4 +122,40 @@ final class Dom
 
         return $ret;
     }
+
+    /**
+     * Check whether given node is an "element" node.
+     *
+     * @param  DOMNode|null $node
+     * @return bool
+     * @since  5.3
+     */
+    public static function isElementNode(DOMNode|null $node): bool
+    {
+        return ($node && $node->nodeType == XML_ELEMENT_NODE);
+    }
+
+    /**
+     * Check whether given node is a "document" node.
+     *
+     * @param  DOMNode|null $node
+     * @return bool
+     * @since  5.3
+     */
+    public static function isDocumentNode(DOMNode|null $node): bool
+    {
+        return ($node && $node->nodeType == XML_DOCUMENT_NODE);
+    }
+
+    /**
+     * Check whether given node is an "HTML document" node.
+     *
+     * @param  DOMNode|null $node
+     * @return bool
+     * @since  5.3
+     */
+    public static function isHtmlDocumentNode(DOMNode|null $node): bool
+    {
+        return ($node && $node->nodeType == XML_HTML_DOCUMENT_NODE);
+    }
 }

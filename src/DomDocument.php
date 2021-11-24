@@ -247,7 +247,7 @@ class DomDocument extends _DOMDocument
      *
      * @param  string       $query
      * @param  DOMNode|null $root
-     * @return DomElementList|DomNodeList|null
+     * @return froq\dom\DomElementList|froq\dom\DomNodeList|null
      * @throws froq\dom\DomException
      */
     public final function query(string $query, DOMNode $root = null): DomElementList|DomNodeList|null
