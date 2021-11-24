@@ -252,6 +252,37 @@ trait NodeTrait
     }
 
     /**
+     * Get a child node.
+     *
+     * @param  int $i
+     * @return DomElement|null
+     */
+    public function child(int $i): DomElement|null
+    {
+        return $this->children()[$i] ?? null;
+    }
+
+    /**
+     * Get all children.
+     *
+     * @return DomElementList|null
+     */
+    public function children(): DomElementList|null
+    {
+        $child = $this->firstChild;
+        $children = [];
+
+        while ($child) {
+            if ($child->nodeType == XML_ELEMENT_NODE) {
+                $children[] = $child;
+            }
+            $child = $child->nextSibling;
+        }
+
+        return $children ? new DomElementList($children) : null;
+    }
+
+    /**
      * Get parent node.
      *
      * @return DOMNode|null
@@ -287,37 +318,6 @@ trait NodeTrait
         }
 
         return $parents ? new DomNodeList($parents) : null;
-    }
-
-    /**
-     * Get a child node.
-     *
-     * @param  int $i
-     * @return DomElement|null
-     */
-    public function child(int $i): DomElement|null
-    {
-        return $this->children()[$i] ?? null;
-    }
-
-    /**
-     * Get all children.
-     *
-     * @return DomElementList|null
-     */
-    public function children(): DomElementList|null
-    {
-        $child = $this->firstChild;
-        $children = [];
-
-        while ($child) {
-            if ($child->nodeType == XML_ELEMENT_NODE) {
-                $children[] = $child;
-            }
-            $child = $child->nextSibling;
-        }
-
-        return $children ? new DomElementList($children) : null;
     }
 
     /**
