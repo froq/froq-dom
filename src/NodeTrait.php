@@ -126,15 +126,7 @@ trait NodeTrait
      */
     public function attributes(): array|null
     {
-        if ($this->hasAttributes()) {
-            foreach ($this->attributes as $attribute) {
-                $attributes[$attribute->name] = $attribute->value;
-            }
-
-            return $attributes;
-        }
-
-        return null;
+        return $this->getAttributes();
     }
 
     /**
@@ -321,8 +313,46 @@ trait NodeTrait
     }
 
     /**
-     * @override
+     * Set given attribute map.
+     *
+     * @param  array $attributes
+     * @return self
+     * @since  5.4
      */
+    public function setAttributes(array $attributes): self
+    {
+        foreach ($attributes as $name => $value) {
+            $this->setAttribute($name, $value);
+        }
+    }
+
+    /**
+     * Get attribute map, optionally by given names.
+     *
+     * @param  array|null $names
+     * @return array|null
+     * @since  5.4
+     */
+    public function getAttributes(array $names = null): array|null
+    {
+        if ($this->hasAttributes()) {
+            $attributes = [];
+            foreach ($this->attributes as $attribute) {
+                $attributes[$attribute->name] = $attribute->value;
+            }
+
+            if ($names) {
+                $attributes = array_filter($attributes,
+                    fn($name) => in_array($name, $names), 2);
+            }
+
+            return $attributes;
+        }
+
+        return null;
+    }
+
+    /** @override */
     public function getAttribute(string $name): string|null
     {
         // Prevent returning "" from non-exist attributes.
