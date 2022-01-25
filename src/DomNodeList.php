@@ -39,7 +39,7 @@ class DomNodeList implements Arrayable, ArrayAccess, IteratorAggregate
         // We accept only DOMNode's here.
         foreach ($items as $item) {
             ($item instanceof DOMNode) || throw new DomException(
-                'Each item must be a %s, %s given', [DOMNode::class, get_type($item)]
+                'Each item must be a %s, %t given', [DOMNode::class, $item]
             );
 
             $this->items[] = $item;

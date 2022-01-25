@@ -33,7 +33,7 @@ final class DomElementList extends DomNodeList
         // We accept only dom elements here.
         foreach ($items as $item) {
             ($item instanceof DomElement) || throw new DomException(
-                'Each item must be a %s, %s given', [DomElement::class, get_type($item)]
+                'Each item must be a %s, %t given', [DomElement::class, $item]
             );
         }
 
