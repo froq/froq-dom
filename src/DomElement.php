@@ -8,7 +8,6 @@ declare(strict_types=1);
 namespace froq\dom;
 
 use froq\dom\{DomException, NodeTrait, NodeFindTrait};
-use DOMElement as _DOMElement;
 
 /**
  * Dom Element.
@@ -22,7 +21,7 @@ use DOMElement as _DOMElement;
  * @author  Kerem Güneş
  * @since   4.0
  */
-class DomElement extends _DOMElement
+class DomElement extends \DOMElement
 {
     /** @see froq\dom\NodeTrait */
     /** @see froq\dom\NodeFindTrait @since 5.2 */

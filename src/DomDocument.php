@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace froq\dom;
 
 use froq\dom\{DomException, DomElement, DomElementList, DomNodeList, Document, NodeTrait};
-use DOMDocument as _DOMDocument, DOMNode, DOMXPath;
+use DOMNode, DOMXPath;
 
 /**
  * Dom Document.
@@ -22,7 +22,7 @@ use DOMDocument as _DOMDocument, DOMNode, DOMXPath;
  * @author  Kerem Güneş
  * @since   4.0
  */
-class DomDocument extends _DOMDocument
+class DomDocument extends \DOMDocument
 {
     /** @see froq\dom\NodeTrait */
     /** @see froq\dom\NodeFindTrait @since 5.2 */
