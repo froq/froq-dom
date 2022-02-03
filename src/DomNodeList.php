@@ -10,7 +10,7 @@ namespace froq\dom;
 use froq\dom\DomException;
 use froq\common\interface\Arrayable;
 use froq\collection\iterator\{ArrayIterator, ReverseArrayIterator};
-use DOMNode, ArrayAccess, IteratorAggregate, Traversable;
+use DOMNode;
 
 /**
  * Dom Node List.
@@ -21,9 +21,9 @@ use DOMNode, ArrayAccess, IteratorAggregate, Traversable;
  * @package froq\dom
  * @object  froq\dom\DomNodeList
  * @author  Kerem Güneş
- * @since   4.0, 5.2 Move as "DomNodeList" from "NodeList".
+ * @since   4.0, 5.2
  */
-class DomNodeList implements Arrayable, ArrayAccess, IteratorAggregate
+class DomNodeList implements Arrayable, \ArrayAccess, \IteratorAggregate
 {
     /** @var array<DOMNode> */
     protected array $items = [];
@@ -31,10 +31,10 @@ class DomNodeList implements Arrayable, ArrayAccess, IteratorAggregate
     /**
      * Constructor.
      *
-     * @param  array<DOMNode>|Traversable<DOMNode> $items
+     * @param  iterable<DOMNode> $items
      * @throws froq\dom\DomException
      */
-    public function __construct(array|Traversable $items)
+    public function __construct(iterable $items)
     {
         // We accept only DOMNode's here.
         foreach ($items as $item) {
@@ -182,6 +182,8 @@ class DomNodeList implements Arrayable, ArrayAccess, IteratorAggregate
     /**
      * @inheritDoc ArrayAccess
      */
+
+    #[\ReturnTypeWillChange]
     public function offsetExists($i)
     {
         return $this->item($i) != null;
@@ -190,26 +192,27 @@ class DomNodeList implements Arrayable, ArrayAccess, IteratorAggregate
     /**
      * @inheritDoc ArrayAccess
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($i)
     {
         return $this->item($i);
     }
 
     /**
-     * Block mutation attempts.
-     *
+     * @inheritDoc ArrayAccess
      * @throws froq\dom\DomException
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($i, $node)
     {
         throw new DomException('Cannot modify read-only object ' . self::class);
     }
 
     /**
-     * Block mutation attempts.
-     *
+     * @inheritDoc ArrayAccess
      * @throws froq\dom\DomException
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($i)
     {
         throw new DomException('Cannot modify read-only object ' . self::class);

@@ -19,7 +19,7 @@ use DOMNode;
  * @package froq\dom
  * @object  froq\dom\NodeFindTrait
  * @author  Kerem Güneş
- * @since   5.2 Separated from "DomDocument" methods.
+ * @since   5.2
  * @internal
  */
 trait NodeFindTrait

@@ -8,7 +8,6 @@ declare(strict_types=1);
 namespace froq\dom;
 
 use froq\dom\{DomNodeList, DomElement, DomException};
-use Traversable;
 
 /**
  * Dom Element List.
@@ -25,10 +24,10 @@ final class DomElementList extends DomNodeList
     /**
      * Constructor.
      *
-     * @param  array<DomElement>|Traversable<DomElement> $items
+     * @param  iterable<DomElement> $items
      * @throws froq\dom\DomException
      */
-    public function __construct(array|Traversable $items)
+    public function __construct(iterable $items)
     {
         // We accept only dom elements here.
         foreach ($items as $item) {
