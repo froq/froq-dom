@@ -7,9 +7,8 @@ declare(strict_types=1);
 
 namespace froq\dom;
 
-use froq\dom\DomException;
-use froq\common\interface\Arrayable;
-use froq\collection\iterator\{ArrayIterator, ReverseArrayIterator};
+use froq\common\interface\{Arrayable, Listable};
+use froq\common\exception\UnsupportedOperationException;
 use DOMNode;
 
 /**
@@ -23,7 +22,7 @@ use DOMNode;
  * @author  Kerem Güneş
  * @since   4.0, 5.2
  */
-class DomNodeList implements Arrayable, \ArrayAccess, \IteratorAggregate
+class DomNodeList implements Arrayable, Listable, \ArrayAccess, \IteratorAggregate
 {
     /** @var array<DOMNode> */
     protected array $items = [];
@@ -47,7 +46,7 @@ class DomNodeList implements Arrayable, \ArrayAccess, \IteratorAggregate
     }
 
     /**
-     * @alias of count()
+     * @alias count()
      */
     public function length()
     {
@@ -136,6 +135,19 @@ class DomNodeList implements Arrayable, \ArrayAccess, \IteratorAggregate
     }
 
     /**
+     * Reduce.
+     *
+     * @param  mixed    $carry
+     * @param  callable $func
+     * @return mixed
+     * @since  6.0
+     */
+    public function reduce(mixed $carry, callable $func): mixed
+    {
+        return array_reduce($this->rows, $func, $carry);
+    }
+
+    /**
      * Reverse node list.
      *
      * @return self
@@ -156,65 +168,60 @@ class DomNodeList implements Arrayable, \ArrayAccess, \IteratorAggregate
     }
 
     /**
+     * @inheritDoc froq\common\interface\Listable
+     */
+    public function toList(): array
+    {
+        return array_list($this->items);
+    }
+
+    /**
      * @inheritDoc Countable
      */
     public function count(): int
     {
-        return count($this->items());
+        return count($this->items);
     }
 
     /**
      * @inheritDoc IteratorAggregate
-     */
-    public function getIterator(): ArrayIterator
+     */ #[\ReturnTypeWillChange]
+    public function getIterator(): iterable
     {
-        return new ArrayIterator($this->items);
-    }
-
-    /**
-     * @since 5.2
-     */
-    public function getReverseIterator(): ReverseArrayIterator
-    {
-        return new ReverseArrayIterator($this->items);
+        return new \ArrayIterator($this->items);
     }
 
     /**
      * @inheritDoc ArrayAccess
      */
-
-    #[\ReturnTypeWillChange]
-    public function offsetExists($i)
+    public function offsetExists(mixed $i): bool
     {
-        return $this->item($i) != null;
+        return $this->item($i) !== null;
     }
 
     /**
      * @inheritDoc ArrayAccess
      */
-    #[\ReturnTypeWillChange]
-    public function offsetGet($i)
+    public function offsetGet(mixed $i): object|null
     {
         return $this->item($i);
     }
 
     /**
      * @inheritDoc ArrayAccess
-     * @throws froq\dom\DomException
+     * @throws froq\common\exception\UnsupportedOperationException
      */
-    #[\ReturnTypeWillChange]
-    public function offsetSet($i, $node)
+    public function offsetSet(mixed $i, mixed $row): never
     {
-        throw new DomException('Cannot modify read-only object ' . self::class);
+        throw new UnsupportedOperationException('Cannot modify read-only object ' . static::class);
     }
 
     /**
      * @inheritDoc ArrayAccess
-     * @throws froq\dom\DomException
+     * @throws froq\common\exception\UnsupportedOperationException
      */
-    #[\ReturnTypeWillChange]
-    public function offsetUnset($i)
+    public function offsetUnset(mixed $i): never
     {
-        throw new DomException('Cannot modify read-only object ' . self::class);
+        throw new UnsupportedOperationException('Cannot modify read-only object ' . static::class);
     }
 }

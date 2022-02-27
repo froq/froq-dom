@@ -7,8 +7,6 @@ declare(strict_types=1);
 
 namespace froq\dom;
 
-use froq\dom\{DomNodeList, DomElement, DomException};
-
 /**
  * Dom Element List.
  *
@@ -19,7 +17,7 @@ use froq\dom\{DomNodeList, DomElement, DomException};
  * @author  Kerem Güneş
  * @since   5.2
  */
-final class DomElementList extends DomNodeList
+class DomElementList extends DomNodeList
 {
     /**
      * Constructor.
