@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace froq\dom;
 
-use froq\dom\{DomException, DomElement, DomElementList, DomNodeList, Document, NodeTrait};
 use DOMNode, DOMXPath;
 
 /**
@@ -24,8 +23,10 @@ use DOMNode, DOMXPath;
  */
 class DomDocument extends \DOMDocument
 {
-    /** @see froq\dom\NodeTrait */
-    /** @see froq\dom\NodeFindTrait @since 5.2 */
+    /**
+     * @see froq\dom\NodeTrait
+     * @see froq\dom\NodeFindTrait
+     */
     use NodeTrait, NodeFindTrait;
 
     /** @var string */
@@ -66,7 +67,7 @@ class DomDocument extends \DOMDocument
         $type = strtolower($type);
 
         if ($type != Document::TYPE_XML && $type != Document::TYPE_HTML) {
-            throw new DomException('Invalid type %s, valids are: xml, html', $type);
+            throw new DomException('Invalid type %s [valids: xml, html]', $type);
         }
 
         $this->type = $type;
@@ -167,7 +168,7 @@ class DomDocument extends \DOMDocument
         } elseif ($type == Document::TYPE_HTML) {
             // Workaround for a proper encoding.
             if (!str_starts_with($source, '<?xml')) {
-                $source = '<?xml'. $source;
+                $source = '<?xml' . $source;
             }
             parent::loadHtml($source, $flags);
         }
@@ -177,14 +178,14 @@ class DomDocument extends \DOMDocument
         if ($error) {
             libxml_clear_errors();
 
-            $error->file = $error->file ?: 'n/a';
+            $error->file    = $error->file ?: 'n/a';
             $error->message = trim($error->message);
 
             if ($options['throwErrors']) {
                 throw new DomException(
                     'Parse error: %s (level: %s code: %s column: %s file: %s line: %s)',
                     [$error->message, $error->level, $error->code, $error->column, $error->file, $error->line],
-                    $error->code
+                    code: $error->code
                 );
             }
         }
@@ -209,7 +210,7 @@ class DomDocument extends \DOMDocument
     }
 
     /**
-     * Load a XML source (@alias of loadSource() for XML sources).
+     * Load a XML source (@alias to loadSource() for XML sources).
      *
      * @param  string     $source
      * @param  array|null $options
@@ -272,10 +273,6 @@ class DomDocument extends \DOMDocument
 
     /**
      * Prepare validating given URL.
-     *
-     * @param  string $url
-     * @return string|null
-     * @internal
      */
     private static function prepareUrl(string $url): string|null
     {

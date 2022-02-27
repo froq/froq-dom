@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace froq\dom;
 
-use froq\dom\{Document, DomDocument, XmlDocument, HtmlDocument};
 use DOMNode;
 
 /**
@@ -57,8 +56,9 @@ final class Dom extends \StaticClass
      */
     public static function parseXml(string|DOMNode $xml, array $options = null): array|object|string|null
     {
-        if ($xml === '')   return null;
-        if ($xml === null) return null;
+        if ($xml === '') {
+            return null;
+        }
 
         $root = $xml;
 
@@ -105,7 +105,7 @@ final class Dom extends \StaticClass
                 } else {
                     // Multi nodes.
                     if (!isset($groups[$nodeName])) {
-                        $groups[$nodeName] = 1;
+                        $groups[$nodeName] = true;
                         $ret[$nodeName] = [$ret[$nodeName]];
                     }
                     $ret[$nodeName][] = self::parseXml($node, $options);

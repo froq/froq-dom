@@ -7,8 +7,6 @@ declare(strict_types=1);
 
 namespace froq\dom;
 
-use froq\dom\{DomException, NodeTrait, NodeFindTrait};
-
 /**
  * Dom Element.
  *

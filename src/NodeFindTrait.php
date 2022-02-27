@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace froq\dom;
 
-use froq\dom\{Document, DomDocument, DomElement, DomNodeList};
 use DOMNode;
 
 /**

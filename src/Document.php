@@ -57,7 +57,7 @@ class Document implements Stringable
     public final function setType(string $type): self
     {
         if ($type != self::TYPE_XML && $type != self::TYPE_HTML) {
-            throw new DomException('Invalid type %s, valids are: xml, html', $type);
+            throw new DomException('Invalid type %s [valids: xml, html]', $type);
         }
 
         $this->type = $type;
@@ -116,17 +116,19 @@ class Document implements Stringable
         $ret = '';
 
         if ($this->type == self::TYPE_HTML) {
-            $ret = '<!DOCTYPE html>'. $newLine;
+            $ret = '<!DOCTYPE html>';
         } elseif ($this->type == self::TYPE_XML) {
-            $ret = '<?xml version="'. $this->version .'" encoding="'. $this->encoding .'"?>'. $newLine;
+            $ret = sprintf('<?xml version="%s" encoding="%s"?>', $this->version, $this->encoding);
         }
 
+        $ret .= $newLine;
+
         $root = (array) ($this->data['@root'] ?? null);
-        $root || throw new DomException('Invalid document data, no @root field found in given data');
+        $root || throw new DomException('Invalid document data, no @root field in given data');
 
         // Eg: [name, content?, @nodes?, @attributes?, @selfClosing?].
         [$rootName, $rootContent] = array_select($root, [0, 1]);
-        $rootName || throw new DomException('Invalid document data, no @root tag field found in given data');
+        $rootName || throw new DomException('Invalid document data, no @root tag field in given data');
 
         $nodes       = $root['@nodes']       ?? null;
         $attributes  = $root['@attributes']  ?? null;
@@ -181,12 +183,6 @@ class Document implements Stringable
 
     /**
      * Generate node string from a node.
-     *
-     * @param  array  $node
-     * @param  string $newLine
-     * @param  string $indentString
-     * @param  int    $indentCount @internal
-     * @return string
      */
     private function generateNodeString(array $node, string $newLine = '', string $indentString = '',
         int $indentCount = 1): string
@@ -251,10 +247,6 @@ class Document implements Stringable
 
     /**
      * Generate attribute string from an attribute.
-     *
-     * @param  array $attributes
-     * @return string
-     * @throws froq\dom\DomException
      */
     private function generateAttributeString(array $attributes): string
     {
@@ -271,11 +263,17 @@ class Document implements Stringable
             $name = (string) $name;
 
             if (strpbrk($name, $notAllowedChars) !== false) {
-                throw new DomException('No valid attribute name `%s` given [tip: don\'t use'
-                    . ' these characters `%s` in name]', [$name, $notAllowedChars]);
-            } elseif (!preg_match($namePattern, $name)) {
-                throw new DomException('No valid attribute name `%s` given [tip: use a name'
-                    . ' that matches with `%s`', [$name, $namePattern]);
+                throw new DomException(
+                    'Invalid attribute name `%s` given '.
+                    '[tip: don\'t use these characters `%s` in name]',
+                    [$name, $notAllowedChars]
+                );
+            } elseif (!preg_test($namePattern, $name)) {
+                throw new DomException(
+                    'Invalid attribute name `%s` given '.
+                    '[tip: use a name that matches with `%s`',
+                    [$name, $namePattern]
+                );
             }
 
             $value = json_encode($value, JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION);
