@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace froq\dom;
 
-use froq\dom\{Document, DomNodeList};
 use DOMNode;
 
 /**
@@ -64,7 +63,7 @@ trait NodeTrait
     public function html(bool $outer = false): string|null
     {
         // Also a document ($this) may be given.
-        $doc = $this->ownerDocument ?? $this;
+        $doc     = $this->ownerDocument ?? $this;
         $docType = $doc->getType();
 
         $html = '';
@@ -353,6 +352,16 @@ trait NodeTrait
     }
 
     /** @override */
+    public function setAttribute(string $name, string|null $value): void
+    {
+        if ($value !== null) {
+            parent::setAttribute($name, $value);
+        } else {
+            parent::removeAttribute($name);
+        }
+    }
+
+    /** @override */ #[\ReturnTypeWillChange]
     public function getAttribute(string $name): string|null
     {
         // Prevent returning "" from non-exist attributes.
