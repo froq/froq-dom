@@ -8,7 +8,6 @@ declare(strict_types=1);
 namespace froq\dom;
 
 use froq\common\interface\{Arrayable, Listable};
-use froq\common\exception\UnsupportedOperationException;
 use DOMNode;
 
 /**
@@ -209,19 +208,19 @@ class DomNodeList implements Arrayable, Listable, \ArrayAccess, \IteratorAggrega
 
     /**
      * @inheritDoc ArrayAccess
-     * @throws froq\common\exception\UnsupportedOperationException
+     * @throws     ReadonlyError
      */
     public function offsetSet(mixed $i, mixed $row): never
     {
-        throw new UnsupportedOperationException('Cannot modify read-only object ' . static::class);
+        throw new \ReadonlyError('Cannot modify readonly class ' . static::class);
     }
 
     /**
      * @inheritDoc ArrayAccess
-     * @throws froq\common\exception\UnsupportedOperationException
+     * @throws     ReadonlyError
      */
     public function offsetUnset(mixed $i): never
     {
-        throw new UnsupportedOperationException('Cannot modify read-only object ' . static::class);
+        throw new \ReadonlyError('Cannot modify readonly class ' . static::class);
     }
 }
