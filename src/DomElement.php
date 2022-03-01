@@ -21,8 +21,10 @@ namespace froq\dom;
  */
 class DomElement extends \DOMElement
 {
-    /** @see froq\dom\NodeTrait */
-    /** @see froq\dom\NodeFindTrait @since 5.2 */
+    /**
+     * @see froq\dom\NodeTrait
+     * @see froq\dom\NodeFindTrait
+     **/
     use NodeTrait, NodeFindTrait;
 
     /**
