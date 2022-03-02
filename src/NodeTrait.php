@@ -103,7 +103,7 @@ trait NodeTrait
             static $tags = ['a', 'img', 'link', 'iframe', 'audio', 'video', 'area',
                 'track', 'embed', 'source', 'area', 'object'];
 
-            if (in_array($this->tag(), $tags)) {
+            if (in_array($this->tag(), $tags, true)) {
                 $baseUrl = (string) $this->ownerDocument->getBaseUrl();
                 $baseUrlParts = parse_url($baseUrl);
 
