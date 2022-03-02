@@ -148,7 +148,7 @@ class DomDocument extends \DOMDocument
             $options['throwErrors'] = false;
         }
 
-        $options = array_merge($optionsDefault, (array) $options);
+        $options = array_options($options, $optionsDefault);
 
         // Apply options & flags.
         $this->validateOnParse     = (bool) $options['validateOnParse'];
