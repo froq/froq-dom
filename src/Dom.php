@@ -12,8 +12,8 @@ use DOMNode;
 /**
  * Dom.
  *
- * Represents a factory entity for XmlDocument/HtmlDocument classes, and contains a parser method for parsing
- * XML documents.
+ * A static class, provides factory methods for `XmlDocument` and `HtmlDocument` classes,
+ * and contains a parser method for parsing XML documents and other some utility methods.
  *
  * @package froq\dom
  * @object  froq\dom\Dom

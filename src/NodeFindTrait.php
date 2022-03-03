@@ -12,8 +12,7 @@ use DOMNode;
 /**
  * Node Find Trait.
  *
- * Represents a trait that provides some find utilities for `DomDocument` and `DomElement`
- * classes.
+ * A trait, provides some find utilities for `DomDocument` and `DomElement` classes.
  *
  * @package froq\dom
  * @object  froq\dom\NodeFindTrait

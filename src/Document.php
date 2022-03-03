@@ -12,7 +12,7 @@ use froq\common\interface\Stringable;
 /**
  * Document.
  *
- * Represents a base document entity for XmlDocument/HtmlDocument classes.
+ * A base class for `XmlDocument` and `HtmlDocument` classes.
  *
  * @package froq\dom
  * @object  froq\dom\Document

@@ -10,7 +10,7 @@ namespace froq\dom;
 /**
  * Dom Element List.
  *
- * Represents an element list class that entends `DomNodeList` class.
+ * A read-only class, entends `DomNodeList` class and accepts `DomElement` items.
  *
  * @package froq\dom
  * @object  froq\dom\DomElementList

@@ -10,9 +10,9 @@ namespace froq\dom;
 /**
  * Dom Element.
  *
- * Represents a read-only DOM element class that provides a DOMElement structure with additional
- * utility methods such find(), findAll() etc. and NodeTrait methods, for querying nodes via XPath
- * utilities.
+ * A read-only class, provides a `DOMElement` structure with some additional utility
+ * methods such `find()`, `findAll()` etc. and `NodeTrait` methods, for querying
+ * nodes via `XPath` utilities.
  *
  * @package froq\dom
  * @object  froq\dom\DomElement

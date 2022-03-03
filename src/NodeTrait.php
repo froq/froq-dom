@@ -12,7 +12,7 @@ use DOMNode;
 /**
  * Node Trait.
  *
- * Represents a trait entity that provides some utility methods to DomDocument/DomElement classes.
+ * A trait, provides some find utilities for `DomDocument` and `DomElement` classes.
  *
  * @package froq\dom
  * @object  froq\dom\NodeTrait

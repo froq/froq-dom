@@ -12,9 +12,9 @@ use DOMNode, DOMXPath;
 /**
  * Dom Document.
  *
- * Represents a read-only DOM document class that provides a DOMElement structure with additional
- * utility methods such find(), findAll() etc. and NodeTrait methods, for loading XML/HTML documents
- * and querying nodes via XPath utilities.
+ * A read-only class, provides a `DOMElement` structure with some additional utility
+ * methods such `find()`, `findAll()` etc. and `NodeTrait` methods, for querying
+ * nodes via `XPath` utilities.
  *
  * @package froq\dom
  * @object  froq\dom\DomDocument

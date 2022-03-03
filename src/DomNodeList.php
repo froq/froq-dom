@@ -13,8 +13,8 @@ use DOMNode;
 /**
  * Dom Node List.
  *
- * Represents a node list class that provides an extended `DOMNodeList` structure with additional
- * utility methods.
+ * A read-only class, provides an extended `DOMNodeList` structure with some additional
+ * utility methods and accepts `DOMNode` items.
  *
  * @package froq\dom
  * @object  froq\dom\DomNodeList
