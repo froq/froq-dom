@@ -143,7 +143,7 @@ class DomNodeList implements Arrayable, Listable, \ArrayAccess, \IteratorAggrega
      */
     public function reduce(mixed $carry, callable $func): mixed
     {
-        return array_reduce($this->rows, $func, $carry);
+        return array_reduce($this->items, $func, $carry);
     }
 
     /**
