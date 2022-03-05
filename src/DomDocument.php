@@ -23,10 +23,6 @@ use DOMNode, DOMXPath;
  */
 class DomDocument extends \DOMDocument
 {
-    /**
-     * @see froq\dom\NodeTrait
-     * @see froq\dom\NodeFindTrait
-     */
     use NodeTrait, NodeFindTrait;
 
     /** @var string */
