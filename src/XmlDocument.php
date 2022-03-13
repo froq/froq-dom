@@ -20,21 +20,21 @@ class XmlDocument extends Document
     /** @const string */
     public const ENCODING = 'utf-8', VERSION = '1.0';
 
-    /** @var string */
+    /** @var string, string */
     public string $encoding, $version;
 
     /**
      * Constructor.
      *
-     * @param array|null $data
-     * @param string     $encoding
-     * @param string     $version
+     * @param array|null  $data
+     * @param string|null $encoding
+     * @param string|null $version
      */
-    public function __construct(array $data = null, string $encoding = self::ENCODING, string $version = self::VERSION)
+    public function __construct(array $data = null, string $encoding = null, string $version = null)
     {
         parent::__construct(Document::TYPE_XML, $data);
 
-        $this->encoding = $encoding;
-        $this->version  = $version;
+        $this->encoding = $encoding ?? self::ENCODING;
+        $this->version  = $version  ?? self::VERSION;
     }
 }
