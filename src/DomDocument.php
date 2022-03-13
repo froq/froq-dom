@@ -131,18 +131,16 @@ class DomDocument extends \DOMDocument
     {
         $this->setType($type); // @important
 
+        // HTML is more quiet.
+        if ($type == Document::TYPE_HTML) {
+            $options['throwErrors'] ??= false;
+        }
+
         static $optionsDefault = [
             'validateOnParse'     => false, 'preserveWhiteSpace' => false,
             'strictErrorChecking' => false, 'throwErrors'        => true,
             'flags'               => 0
         ];
-
-        $type = $this->getType();
-
-        // HTML is more quiet.
-        if ($type == Document::TYPE_HTML && !isset($options['throwErrors'])) {
-            $options['throwErrors'] = false;
-        }
 
         $options = array_options($options, $optionsDefault);
 

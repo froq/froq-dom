@@ -7,8 +7,6 @@ declare(strict_types=1);
 
 namespace froq\dom;
 
-use froq\common\interface\Stringable;
-
 /**
  * Document.
  *
@@ -19,7 +17,7 @@ use froq\common\interface\Stringable;
  * @author  Kerem Güneş
  * @since   3.0
  */
-class Document implements Stringable
+class Document implements \Stringable
 {
     /**
      * Types.
@@ -44,6 +42,12 @@ class Document implements Stringable
     {
         $this->setType($type);
         $this->setData($data ?? []);
+    }
+
+    /** @magic */
+    public function __toString(): string
+    {
+        return $this->toString();
     }
 
     /**
@@ -98,15 +102,22 @@ class Document implements Stringable
     }
 
     /**
-     * @inheritDoc froq\common\interface\Stringable
+     * Get representation of the document.
      *
-     * @param  bool   $indent
-     * @param  string $indentString
+     * @param  array|null $options
      * @return string
      * @throws froq\dom\DomException
      */
-    public final function toString(bool $indent = false, string $indentString = "\t"): string
+    public final function toString(array $options = null): string
     {
+        static $optionsDefault = [
+            'indent' => false, 'indentString' => "\t",
+        ];
+
+        $options = array_options($options, $optionsDefault);
+
+        [$indent, $indentString] = array_select($options, ['indent', 'indentString']);
+
         $newLine = "\n";
         if (!$indent) {
             $newLine = $indentString = '';

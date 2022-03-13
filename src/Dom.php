@@ -117,6 +117,7 @@ final class Dom extends \StaticClass
 
         // Objectify if not assoc. @default=true
         $options['assoc'] ??= true;
+
         if (!$options['assoc'] && is_array($ret)) {
             $ret = json_decode(json_encode($ret));
         }
