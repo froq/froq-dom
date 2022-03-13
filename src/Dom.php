@@ -115,8 +115,9 @@ final class Dom extends \StaticClass
             $ret = $root->nodeValue;
         }
 
-        // Objectify.
-        if (!($options['assoc'] ?? true) && is_array($ret)) {
+        // Objectify if not assoc. @default=true
+        $options['assoc'] ??= true;
+        if (!$options['assoc'] && is_array($ret)) {
             $ret = json_decode(json_encode($ret));
         }
 
