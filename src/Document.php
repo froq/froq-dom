@@ -116,7 +116,8 @@ class Document implements \Stringable
 
         $options = array_options($options, $optionsDefault);
 
-        [$indent, $indentString] = array_select($options, ['indent', 'indentString']);
+        $indent       = (bool)   $options['indent'];
+        $indentString = (string) $options['indentString'];
 
         $newLine = "\n";
         if (!$indent) {
