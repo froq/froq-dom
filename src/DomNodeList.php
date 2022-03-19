@@ -212,7 +212,7 @@ class DomNodeList implements Arrayable, Listable, \ArrayAccess, \IteratorAggrega
      */
     public function offsetSet(mixed $i, mixed $row): never
     {
-        throw new \ReadonlyError('Cannot modify readonly class ' . static::class);
+        throw new \ReadonlyError($this);
     }
 
     /**
@@ -221,6 +221,6 @@ class DomNodeList implements Arrayable, Listable, \ArrayAccess, \IteratorAggrega
      */
     public function offsetUnset(mixed $i): never
     {
-        throw new \ReadonlyError('Cannot modify readonly class ' . static::class);
+        throw new \ReadonlyError($this);
     }
 }
