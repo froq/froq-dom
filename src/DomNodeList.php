@@ -210,7 +210,7 @@ class DomNodeList implements Arrayable, Listable, \ArrayAccess, \IteratorAggrega
      * @inheritDoc ArrayAccess
      * @throws     ReadonlyError
      */
-    public function offsetSet(mixed $i, mixed $row): never
+    public function offsetSet(mixed $i, mixed $_): never
     {
         throw new \ReadonlyError($this);
     }
