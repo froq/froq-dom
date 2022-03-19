@@ -208,19 +208,19 @@ class DomNodeList implements Arrayable, Listable, \ArrayAccess, \IteratorAggrega
 
     /**
      * @inheritDoc ArrayAccess
-     * @throws     ReadonlyError
+     * @throws     ReadonlyClassError
      */
     public function offsetSet(mixed $i, mixed $_): never
     {
-        throw new \ReadonlyError($this);
+        throw new \ReadonlyClassError($this);
     }
 
     /**
      * @inheritDoc ArrayAccess
-     * @throws     ReadonlyError
+     * @throws     ReadonlyClassError
      */
     public function offsetUnset(mixed $i): never
     {
-        throw new \ReadonlyError($this);
+        throw new \ReadonlyClassError($this);
     }
 }
