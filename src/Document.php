@@ -111,7 +111,7 @@ class Document implements \Stringable
     public final function toString(array $options = null): string
     {
         static $optionsDefault = [
-            'indent' => false, 'indentString' => "\t",
+            'indent' => false, 'indentString' => '  ',
         ];
 
         $options = array_options($options, $optionsDefault);
@@ -189,14 +189,14 @@ class Document implements \Stringable
             $ret .= "</{$rootName}>{$newLine}";
         }
 
-        return $ret;
+        return trim($ret);
     }
 
     /**
      * Generate node string from a node.
      */
     private function generateNodeString(array $node, string $newLine = '', string $indentString = '',
-        int $indentCount = 1): string
+        int $indentLevel = 1): string
     {
         // Eg: [name, content?, @nodes?, @attributes?, @selfClosing?].
         [$name, $content] = array_select($node, [0, 1]);
@@ -226,27 +226,27 @@ class Document implements \Stringable
                 if ($nodes == null) {
                     $ret .= $content;
                 } else {
-                    $ret .= $newLine . str_repeat($indentString, $indentCount + 1) . $content;
+                    $ret .= $newLine . str_repeat($indentString, $indentLevel + 1) . $content;
                 }
             }
 
             if ($nodes != null) {
                 if ($newLine != null) {
                     $ret .= $newLine;
-                    ++$indentCount;
+                    ++$indentLevel;
                     foreach ($nodes as $node) {
-                        $ret .= str_repeat($indentString, $indentCount);
-                        $ret .= $this->generateNodeString($node, $newLine, $indentString, $indentCount);
+                        $ret .= str_repeat($indentString, $indentLevel);
+                        $ret .= $this->generateNodeString($node, $newLine, $indentString, $indentLevel);
                     }
                 } else {
                     foreach ($nodes as $node) {
-                        $ret .= $this->generateNodeString($node, $newLine, $indentString, $indentCount);
+                        $ret .= $this->generateNodeString($node, $newLine, $indentString, $indentLevel);
                     }
                 }
             }
 
             if ($nodes != null && $newLine != null) {
-                $ret .= str_repeat($indentString, --$indentCount);
+                $ret .= str_repeat($indentString, --$indentLevel);
             }
 
             // Close tag.
