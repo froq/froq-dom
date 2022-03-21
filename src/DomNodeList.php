@@ -80,7 +80,7 @@ class DomNodeList implements Arrayable, Listable, \Countable, \ArrayAccess, \Ite
      */
     public function first(): DOMNode|null
     {
-        return $this->item(0);
+        return first($this->items);
     }
 
     /**
@@ -90,7 +90,7 @@ class DomNodeList implements Arrayable, Listable, \Countable, \ArrayAccess, \Ite
      */
     public function last(): DOMNode|null
     {
-        return $this->item($this->count() - 1);
+        return last($this->items);
     }
 
     /**
@@ -115,7 +115,7 @@ class DomNodeList implements Arrayable, Listable, \Countable, \ArrayAccess, \Ite
      */
     public function filter(callable $func): self
     {
-        $this->items = array_filter($this->items, $func);
+        $this->items = array_filter_list($this->items, $func);
 
         return $this;
     }
