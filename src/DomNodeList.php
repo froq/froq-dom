@@ -21,7 +21,7 @@ use DOMNode;
  * @author  Kerem Güneş
  * @since   4.0, 5.2
  */
-class DomNodeList implements Arrayable, Listable, \ArrayAccess, \IteratorAggregate
+class DomNodeList implements Arrayable, Listable, \Countable, \ArrayAccess, \IteratorAggregate
 {
     /** @var array<DOMNode> */
     protected array $items = [];
