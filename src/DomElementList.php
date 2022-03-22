@@ -36,4 +36,22 @@ class DomElementList extends DomNodeList
 
         parent::__construct($items);
     }
+
+    /**
+     * @throws ReadonlyError
+     * @override
+     */
+    public function offsetSet(mixed $index, mixed $_): never
+    {
+        throw new \ReadonlyError($this);
+    }
+
+    /**
+     * @throws ReadonlyError
+     * @override
+     */
+    public function offsetUnset(mixed $index): never
+    {
+        throw new \ReadonlyError($this);
+    }
 }
