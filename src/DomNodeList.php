@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace froq\dom;
 
-use froq\common\interface\{Arrayable, Listable};
 use DOMNode;
 
 /**
@@ -21,7 +20,7 @@ use DOMNode;
  * @author  Kerem Güneş
  * @since   4.0, 5.2
  */
-class DomNodeList implements Arrayable, Listable, \Countable, \ArrayAccess, \IteratorAggregate
+class DomNodeList implements \Countable, \IteratorAggregate, \ArrayAccess
 {
     /** @var array<DOMNode> */
     protected array $items = [];
@@ -156,22 +155,6 @@ class DomNodeList implements Arrayable, Listable, \Countable, \ArrayAccess, \Ite
         $this->items = array_reverse($this->items);
 
         return $this;
-    }
-
-    /**
-     * @inheritDoc froq\common\interface\Arrayable
-     */
-    public function toArray(): array
-    {
-        return $this->items;
-    }
-
-    /**
-     * @inheritDoc froq\common\interface\Listable
-     */
-    public function toList(): array
-    {
-        return array_list($this->items);
     }
 
     /**
