@@ -20,11 +20,8 @@ use DOMNode;
  * @author  Kerem Güneş
  * @since   4.0, 5.2
  */
-class DomNodeList implements \Countable, \IteratorAggregate, \ArrayAccess
+class DomNodeList extends \ItemList
 {
-    /** @var array<DOMNode> */
-    protected array $items = [];
-
     /**
      * Constructor.
      *
@@ -38,9 +35,17 @@ class DomNodeList implements \Countable, \IteratorAggregate, \ArrayAccess
             ($item instanceof DOMNode) || throw new DomException(
                 'Each item must be a %s, %t given', [DOMNode::class, $item]
             );
-
-            $this->items[] = $item;
         }
+
+        parent::__construct($items, locked: true);
+    }
+
+    /**
+     * @override
+     */
+    public function __debugInfo(): array
+    {
+        return ['length' => $this->length()] + parent::__debugInfo();
     }
 
     /**
@@ -52,158 +57,20 @@ class DomNodeList implements \Countable, \IteratorAggregate, \ArrayAccess
     }
 
     /**
-     * Get an item.
-     *
-     * @param  int $i
-     * @return DOMNode|null
+     * @throws ReadonlyError
+     * @override
      */
-    public function item(int $i): DOMNode|null
+    public function offsetSet(mixed $index, mixed $_): never
     {
-        return $this->items[$i] ?? null;
+        throw new \ReadonlyError($this);
     }
 
     /**
-     * Get all items.
-     *
-     * @return array<DOMNode>
+     * @throws ReadonlyError
+     * @override
      */
-    public function items(): array
+    public function offsetUnset(mixed $index): never
     {
-        return $this->items;
-    }
-
-    /**
-     * Get first item.
-     *
-     * @return DOMNode|null
-     */
-    public function first(): DOMNode|null
-    {
-        return first($this->items);
-    }
-
-    /**
-     * Get last item.
-     *
-     * @return DOMNode|null
-     */
-    public function last(): DOMNode|null
-    {
-        return last($this->items);
-    }
-
-    /**
-     * Call given function for each item of node list.
-     *
-     * @param  callable $func
-     * @return self
-     * @since  5.1
-     */
-    public function each(callable $func): self
-    {
-        each($this->items, $func);
-
-        return $this;
-    }
-
-    /**
-     * Filter node list.
-     *
-     * @param  callable $func
-     * @return self
-     */
-    public function filter(callable $func): self
-    {
-        $this->items = array_filter_list($this->items, $func);
-
-        return $this;
-    }
-
-    /**
-     * Map node list.
-     *
-     * @param  callable $func
-     * @return self
-     */
-    public function map(callable $func): self
-    {
-        $this->items = array_map($func, $this->items);
-
-        return $this;
-    }
-
-    /**
-     * Reduce.
-     *
-     * @param  mixed    $carry
-     * @param  callable $func
-     * @return mixed
-     * @since  6.0
-     */
-    public function reduce(mixed $carry, callable $func): mixed
-    {
-        return array_reduce($this->items, $func, $carry);
-    }
-
-    /**
-     * Reverse node list.
-     *
-     * @return self
-     */
-    public function reverse(): self
-    {
-        $this->items = array_reverse($this->items);
-
-        return $this;
-    }
-
-    /**
-     * @inheritDoc Countable
-     */
-    public function count(): int
-    {
-        return count($this->items);
-    }
-
-    /**
-     * @inheritDoc IteratorAggregate
-     */ #[\ReturnTypeWillChange]
-    public function getIterator(): iterable
-    {
-        return new \ArrayIterator($this->items);
-    }
-
-    /**
-     * @inheritDoc ArrayAccess
-     */
-    public function offsetExists(mixed $i): bool
-    {
-        return $this->item($i) !== null;
-    }
-
-    /**
-     * @inheritDoc ArrayAccess
-     */
-    public function offsetGet(mixed $i): object|null
-    {
-        return $this->item($i);
-    }
-
-    /**
-     * @inheritDoc ArrayAccess
-     * @throws     ReadonlyClassError
-     */
-    public function offsetSet(mixed $i, mixed $_): never
-    {
-        throw new \ReadonlyClassError($this);
-    }
-
-    /**
-     * @inheritDoc ArrayAccess
-     * @throws     ReadonlyClassError
-     */
-    public function offsetUnset(mixed $i): never
-    {
-        throw new \ReadonlyClassError($this);
+        throw new \ReadonlyError($this);
     }
 }
