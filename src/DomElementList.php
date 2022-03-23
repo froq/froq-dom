@@ -22,36 +22,10 @@ class DomElementList extends DomNodeList
     /**
      * Constructor.
      *
-     * @param  iterable<DomElement> $items
-     * @throws froq\dom\DomException
+     * @param iterable<DomElement> $items
      */
     public function __construct(iterable $items)
     {
-        // We accept only dom elements here.
-        foreach ($items as $item) {
-            ($item instanceof DomElement) || throw new DomException(
-                'Each item must be a %s, %t given', [DomElement::class, $item]
-            );
-        }
-
-        parent::__construct($items);
-    }
-
-    /**
-     * @throws ReadonlyError
-     * @override
-     */
-    public function offsetSet(mixed $index, mixed $_): never
-    {
-        throw new \ReadonlyError($this);
-    }
-
-    /**
-     * @throws ReadonlyError
-     * @override
-     */
-    public function offsetUnset(mixed $index): never
-    {
-        throw new \ReadonlyError($this);
+        parent::__construct($items, DomElement::class);
     }
 }

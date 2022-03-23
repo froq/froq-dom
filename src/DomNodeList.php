@@ -25,19 +25,12 @@ class DomNodeList extends \ItemList
     /**
      * Constructor.
      *
-     * @param  iterable<DOMNode> $items
-     * @throws froq\dom\DomException
+     * @param iterable<DOMNode> $items
+     * @param string            $_type @internal
      */
-    public function __construct(iterable $items)
+    public function __construct(iterable $items, string $_type = DOMNode::class)
     {
-        // We accept only DOMNode's here.
-        foreach ($items as $item) {
-            ($item instanceof DOMNode) || throw new DomException(
-                'Each item must be a %s, %t given', [DOMNode::class, $item]
-            );
-        }
-
-        parent::__construct($items, locked: true);
+        parent::__construct($items, type: $_type, locked: true);
     }
 
     /**
@@ -54,23 +47,5 @@ class DomNodeList extends \ItemList
     public function length()
     {
         return $this->count();
-    }
-
-    /**
-     * @throws ReadonlyError
-     * @override
-     */
-    public function offsetSet(mixed $index, mixed $_): never
-    {
-        throw new \ReadonlyError($this);
-    }
-
-    /**
-     * @throws ReadonlyError
-     * @override
-     */
-    public function offsetUnset(mixed $index): never
-    {
-        throw new \ReadonlyError($this);
     }
 }
