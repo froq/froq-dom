@@ -7,14 +7,7 @@ declare(strict_types=1);
 
 namespace froq\dom;
 
-use DOMNode;
-
 /**
- * Dom Node List.
- *
- * A read-only class, provides an extended `DOMNodeList` structure with some additional
- * utility methods and accepts `DOMNode` items.
- *
  * @package froq\dom
  * @object  froq\dom\DomNodeList
  * @author  Kerem Güneş
@@ -26,11 +19,10 @@ class DomNodeList extends \ItemList
      * Constructor.
      *
      * @param iterable<DOMNode> $items
-     * @param string            $_type @internal
      */
-    public function __construct(iterable $items, string $_type = DOMNode::class)
+    public function __construct(iterable $items)
     {
-        parent::__construct($items, type: $_type, locked: true);
+        parent::__construct($items);
     }
 
     /**

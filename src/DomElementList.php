@@ -8,10 +8,6 @@ declare(strict_types=1);
 namespace froq\dom;
 
 /**
- * Dom Element List.
- *
- * A read-only class, entends `DomNodeList` class and accepts `DomElement` items.
- *
  * @package froq\dom
  * @object  froq\dom\DomElementList
  * @author  Kerem Güneş
@@ -26,6 +22,6 @@ class DomElementList extends DomNodeList
      */
     public function __construct(iterable $items)
     {
-        parent::__construct($items, DomElement::class);
+        parent::__construct($items);
     }
 }
