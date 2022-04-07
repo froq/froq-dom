@@ -18,7 +18,7 @@ namespace froq\dom;
 class XmlDocument extends Document
 {
     /** @const string */
-    public const ENCODING = 'utf-8', VERSION = '1.0';
+    public final const ENCODING = 'utf-8', VERSION = '1.0';
 
     /** @var string, string */
     public string $encoding, $version;

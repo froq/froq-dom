@@ -23,8 +23,7 @@ class Document implements \Stringable
      * Types.
      * @const string
      */
-    public const TYPE_XML  = 'xml',
-                 TYPE_HTML = 'html';
+    public final const TYPE_XML = 'xml', TYPE_HTML = 'html';
 
     /** @var string */
     protected string $type;
