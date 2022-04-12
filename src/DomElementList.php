@@ -8,6 +8,8 @@ declare(strict_types=1);
 namespace froq\dom;
 
 /**
+ * A list class for collecting DOM elements.
+ *
  * @package froq\dom
  * @object  froq\dom\DomElementList
  * @author  Kerem Güneş

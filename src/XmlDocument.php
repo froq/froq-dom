@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace froq\dom;
 
 /**
- * Xml Document.
+ * XML document class.
  *
  * @package froq\dom
  * @object  froq\dom\XmlDocument

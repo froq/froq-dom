@@ -8,8 +8,6 @@ declare(strict_types=1);
 namespace froq\dom;
 
 /**
- * Document.
- *
  * A base class for `XmlDocument` and `HtmlDocument` classes.
  *
  * @package froq\dom

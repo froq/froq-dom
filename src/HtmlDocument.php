@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace froq\dom;
 
 /**
- * Html Document.
+ * HTML document class.
  *
  * @package froq\dom
  * @object  froq\dom\HtmlDocument

@@ -10,8 +10,6 @@ namespace froq\dom;
 use DOMNode, DOMXPath;
 
 /**
- * Dom Document.
- *
  * A read-only class, provides a `DOMElement` structure with some additional utility
  * methods such `find()`, `findAll()` etc. and `NodeTrait` methods, for querying
  * nodes via `XPath` utilities.

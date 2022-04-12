@@ -10,8 +10,6 @@ namespace froq\dom;
 use DOMNode;
 
 /**
- * Node Find Trait.
- *
  * A trait, provides some find utilities for `DomDocument` and `DomElement` classes.
  *
  * @package froq\dom
