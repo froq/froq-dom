@@ -7,25 +7,20 @@ declare(strict_types=1);
 
 namespace froq\dom;
 
-use froq\dom\{DomException, DomElement, DomElementList, DomNodeList, Document, NodeTrait};
-use DOMDocument as _DOMDocument, DOMNode, DOMXPath;
+use DOMNode, DOMXPath;
 
 /**
- * Dom Document.
- *
- * Represents a read-only DOM document class that provides a DOMElement structure with additional
- * utility methods such find(), findAll() etc. and NodeTrait methods, for loading XML/HTML documents
- * and querying nodes via XPath utilities.
+ * A read-only class, provides a `DOMElement` structure with some additional utility
+ * methods such `find()`, `findAll()` etc. and `NodeTrait` methods, for querying
+ * nodes via `XPath` utilities.
  *
  * @package froq\dom
  * @object  froq\dom\DomDocument
  * @author  Kerem Güneş
  * @since   4.0
  */
-class DomDocument extends _DOMDocument
+class DomDocument extends \DOMDocument
 {
-    /** @see froq\dom\NodeTrait */
-    /** @see froq\dom\NodeFindTrait @since 5.2 */
     use NodeTrait, NodeFindTrait;
 
     /** @var string */
@@ -66,7 +61,7 @@ class DomDocument extends _DOMDocument
         $type = strtolower($type);
 
         if ($type != Document::TYPE_XML && $type != Document::TYPE_HTML) {
-            throw new DomException('Invalid type %s, valids are: xml, html', $type);
+            throw new DomException('Invalid type %s [valids: xml, html]', $type);
         }
 
         $this->type = $type;
@@ -134,20 +129,18 @@ class DomDocument extends _DOMDocument
     {
         $this->setType($type); // @important
 
+        // HTML is more quiet.
+        if ($type == Document::TYPE_HTML) {
+            $options['throwErrors'] ??= false;
+        }
+
         static $optionsDefault = [
             'validateOnParse'     => false, 'preserveWhiteSpace' => false,
             'strictErrorChecking' => false, 'throwErrors'        => true,
             'flags'               => 0
         ];
 
-        $type = $this->getType();
-
-        // HTML is more quiet.
-        if ($type == Document::TYPE_HTML && !isset($options['throwErrors'])) {
-            $options['throwErrors'] = false;
-        }
-
-        $options = array_merge($optionsDefault, (array) $options);
+        $options = array_options($options, $optionsDefault);
 
         // Apply options & flags.
         $this->validateOnParse     = (bool) $options['validateOnParse'];
@@ -167,7 +160,7 @@ class DomDocument extends _DOMDocument
         } elseif ($type == Document::TYPE_HTML) {
             // Workaround for a proper encoding.
             if (!str_starts_with($source, '<?xml')) {
-                $source = '<?xml'. $source;
+                $source = '<?xml' . $source;
             }
             parent::loadHtml($source, $flags);
         }
@@ -177,14 +170,14 @@ class DomDocument extends _DOMDocument
         if ($error) {
             libxml_clear_errors();
 
-            $error->file = $error->file ?: 'n/a';
+            $error->file    = $error->file ?: 'n/a';
             $error->message = trim($error->message);
 
             if ($options['throwErrors']) {
                 throw new DomException(
                     'Parse error: %s (level: %s code: %s column: %s file: %s line: %s)',
                     [$error->message, $error->level, $error->code, $error->column, $error->file, $error->line],
-                    $error->code
+                    code: $error->code
                 );
             }
         }
@@ -209,7 +202,7 @@ class DomDocument extends _DOMDocument
     }
 
     /**
-     * Load a XML source (@alias of loadSource() for XML sources).
+     * Load a XML source (@alias to loadSource() for XML sources).
      *
      * @param  string     $source
      * @param  array|null $options
@@ -272,10 +265,6 @@ class DomDocument extends _DOMDocument
 
     /**
      * Prepare validating given URL.
-     *
-     * @param  string $url
-     * @return string|null
-     * @internal
      */
     private static function prepareUrl(string $url): string|null
     {

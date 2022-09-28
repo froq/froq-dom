@@ -7,14 +7,11 @@ declare(strict_types=1);
 
 namespace froq\dom;
 
-use froq\dom\{Document, DomDocument, XmlDocument, HtmlDocument};
 use DOMNode;
 
 /**
- * Dom.
- *
- * Represents a factory entity for XmlDocument/HtmlDocument classes, and contains a parser method for parsing
- * XML documents.
+ * A static class, provides factory methods for `XmlDocument` and `HtmlDocument` classes,
+ * and contains a parser method for parsing XML documents and other some utility methods.
  *
  * @package froq\dom
  * @object  froq\dom\Dom
@@ -22,7 +19,7 @@ use DOMNode;
  * @since   3.0
  * @static
  */
-final class Dom
+final class Dom extends \StaticClass
 {
     /**
      * Create an XML document.
@@ -57,8 +54,9 @@ final class Dom
      */
     public static function parseXml(string|DOMNode $xml, array $options = null): array|object|string|null
     {
-        if ($xml === '')   return null;
-        if ($xml === null) return null;
+        if ($xml === '') {
+            return null;
+        }
 
         $root = $xml;
 
@@ -105,7 +103,7 @@ final class Dom
                 } else {
                     // Multi nodes.
                     if (!isset($groups[$nodeName])) {
-                        $groups[$nodeName] = 1;
+                        $groups[$nodeName] = true;
                         $ret[$nodeName] = [$ret[$nodeName]];
                     }
                     $ret[$nodeName][] = self::parseXml($node, $options);
@@ -115,8 +113,10 @@ final class Dom
             $ret = $root->nodeValue;
         }
 
-        // Objectify.
-        if (!($options['assoc'] ?? true) && is_array($ret)) {
+        // Objectify if not assoc. @default=true
+        $options['assoc'] ??= true;
+
+        if (!$options['assoc'] && is_array($ret)) {
             $ret = json_decode(json_encode($ret));
         }
 

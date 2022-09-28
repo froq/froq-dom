@@ -7,19 +7,15 @@ declare(strict_types=1);
 
 namespace froq\dom;
 
-use froq\dom\{Document, DomDocument, DomElement, DomNodeList};
 use DOMNode;
 
 /**
- * Node Find Trait.
- *
- * Represents a trait that provides some find utilities for `DomDocument` and `DomElement`
- * classes.
+ * A trait, provides some find utilities for `DomDocument` and `DomElement` classes.
  *
  * @package froq\dom
  * @object  froq\dom\NodeFindTrait
  * @author  Kerem Güneş
- * @since   5.2 Separated from "DomDocument" methods.
+ * @since   5.2
  * @internal
  */
 trait NodeFindTrait

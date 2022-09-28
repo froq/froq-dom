@@ -7,25 +7,18 @@ declare(strict_types=1);
 
 namespace froq\dom;
 
-use froq\dom\{DomException, NodeTrait, NodeFindTrait};
-use DOMElement as _DOMElement;
-
 /**
- * Dom Element.
- *
- * Represents a read-only DOM element class that provides a DOMElement structure with additional
- * utility methods such find(), findAll() etc. and NodeTrait methods, for querying nodes via XPath
- * utilities.
+ * A read-only class, provides a `DOMElement` structure with some additional utility
+ * methods such `find()`, `findAll()` etc. and `NodeTrait` methods, for querying
+ * nodes via `XPath` utilities.
  *
  * @package froq\dom
  * @object  froq\dom\DomElement
  * @author  Kerem Güneş
  * @since   4.0
  */
-class DomElement extends _DOMElement
+class DomElement extends \DOMElement
 {
-    /** @see froq\dom\NodeTrait */
-    /** @see froq\dom\NodeFindTrait @since 5.2 */
     use NodeTrait, NodeFindTrait;
 
     /**

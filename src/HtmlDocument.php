@@ -7,17 +7,15 @@ declare(strict_types=1);
 
 namespace froq\dom;
 
-use froq\dom\Document;
-
 /**
- * Html Document.
+ * HTML document class.
  *
  * @package froq\dom
  * @object  froq\dom\HtmlDocument
  * @author  Kerem Güneş
  * @since   3.0
  */
-final class HtmlDocument extends Document
+class HtmlDocument extends Document
 {
     /**
      * Constructor.

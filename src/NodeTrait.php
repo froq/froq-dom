@@ -7,13 +7,10 @@ declare(strict_types=1);
 
 namespace froq\dom;
 
-use froq\dom\{Document, DomNodeList};
 use DOMNode;
 
 /**
- * Node Trait.
- *
- * Represents a trait entity that provides some utility methods to DomDocument/DomElement classes.
+ * A trait, provides some find utilities for `DomDocument` and `DomElement` classes.
  *
  * @package froq\dom
  * @object  froq\dom\NodeTrait
@@ -64,7 +61,7 @@ trait NodeTrait
     public function html(bool $outer = false): string|null
     {
         // Also a document ($this) may be given.
-        $doc = $this->ownerDocument ?? $this;
+        $doc     = $this->ownerDocument ?? $this;
         $docType = $doc->getType();
 
         $html = '';
@@ -104,7 +101,7 @@ trait NodeTrait
             static $tags = ['a', 'img', 'link', 'iframe', 'audio', 'video', 'area',
                 'track', 'embed', 'source', 'area', 'object'];
 
-            if (in_array($this->tag(), $tags)) {
+            if (in_array($this->tag(), $tags, true)) {
                 $baseUrl = (string) $this->ownerDocument->getBaseUrl();
                 $baseUrlParts = parse_url($baseUrl);
 
@@ -353,6 +350,16 @@ trait NodeTrait
     }
 
     /** @override */
+    public function setAttribute(string $name, string|null $value): void
+    {
+        if ($value !== null) {
+            parent::setAttribute($name, $value);
+        } else {
+            parent::removeAttribute($name);
+        }
+    }
+
+    /** @override */ #[\ReturnTypeWillChange]
     public function getAttribute(string $name): string|null
     {
         // Prevent returning "" from non-exist attributes.
