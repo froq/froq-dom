@@ -340,7 +340,9 @@ trait NodeTrait
 
             if ($names) {
                 $attributes = array_filter($attributes,
-                    fn($name) => in_array($name, $names), 2);
+                    fn(string $name): bool => in_array($name, $names),
+                    ARRAY_FILTER_USE_KEY
+                );
             }
 
             return $attributes;
