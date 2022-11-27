@@ -272,14 +272,14 @@ class Document implements \Stringable
 
             if (strpbrk($name, $notAllowedChars) !== false) {
                 throw new DomException(
-                    'Invalid attribute name `%s` given '.
-                    '[tip: don\'t use these characters `%s` in name]',
+                    'Invalid attribute name %q given '.
+                    '[tip: don\'t use these characters %q in name]',
                     [$name, $notAllowedChars]
                 );
             } elseif (!preg_test($namePattern, $name)) {
                 throw new DomException(
-                    'Invalid attribute name `%s` given '.
-                    '[tip: use a name that matches with `%s`',
+                    'Invalid attribute name %q given '.
+                    '[tip: use a name that matches with %q',
                     [$name, $namePattern]
                 );
             }
