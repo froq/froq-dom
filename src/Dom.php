@@ -19,7 +19,7 @@ use DOMNode;
  * @since   3.0
  * @static
  */
-final class Dom extends \StaticClass
+class Dom extends \StaticClass
 {
     /**
      * Create an XML document.
