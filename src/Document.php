@@ -17,16 +17,13 @@ namespace froq\dom;
  */
 class Document implements \Stringable
 {
-    /**
-     * Types.
-     * @const string
-     */
-    public final const TYPE_XML = 'xml', TYPE_HTML = 'html';
+    /** Types. */
+    public const TYPE_XML = 'xml', TYPE_HTML = 'html';
 
-    /** @var string */
+    /** Document type. */
     protected string $type;
 
-    /** @var array */
+    /** Document data. */
     protected array $data;
 
     /**
