@@ -54,7 +54,7 @@ class Document implements \Stringable
      * @return self
      * @throws froq\dom\DomException
      */
-    public final function setType(string $type): self
+    public function setType(string $type): self
     {
         if ($type != self::TYPE_XML && $type != self::TYPE_HTML) {
             throw new DomException('Invalid type %s [valids: xml, html]', $type);
@@ -70,7 +70,7 @@ class Document implements \Stringable
      *
      * @return string
      */
-    public final function getType(): string
+    public function getType(): string
     {
         return $this->type;
     }
@@ -81,7 +81,7 @@ class Document implements \Stringable
      * @param  array $data
      * @return self
      */
-    public final function setData(array $data): self
+    public function setData(array $data): self
     {
         $this->data = $data;
 
@@ -93,7 +93,7 @@ class Document implements \Stringable
      *
      * @return array
      */
-    public final function getData(): array
+    public function getData(): array
     {
         return $this->data;
     }
@@ -105,7 +105,7 @@ class Document implements \Stringable
      * @return string
      * @throws froq\dom\DomException
      */
-    public final function toString(array $options = null): string
+    public function toString(array $options = null): string
     {
         static $optionsDefault = [
             'indent' => false, 'indentString' => '  ',

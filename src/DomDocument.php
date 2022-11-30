@@ -56,7 +56,7 @@ class DomDocument extends \DOMDocument
      * @return self
      * @throws froq\dom\DomException
      */
-    public final function setType(string $type): self
+    public function setType(string $type): self
     {
         $type = strtolower($type);
 
@@ -74,7 +74,7 @@ class DomDocument extends \DOMDocument
      *
      * @return string|null
      */
-    public final function getType(): string|null
+    public function getType(): string|null
     {
         return $this->type ?? null;
     }
@@ -86,7 +86,7 @@ class DomDocument extends \DOMDocument
      * @return self
      * @throws froq\dom\DomException
      */
-    public final function setBaseUrl(string $baseUrl): self
+    public function setBaseUrl(string $baseUrl): self
     {
         $baseUrl = self::prepareUrl($baseUrl);
         $baseUrl || throw new DomException('Invalid URL');
@@ -101,7 +101,7 @@ class DomDocument extends \DOMDocument
      *
      * @return string|null
      */
-    public final function getBaseUrl(): string|null
+    public function getBaseUrl(): string|null
     {
         return $this->baseUrl ?? null;
     }
@@ -111,7 +111,7 @@ class DomDocument extends \DOMDocument
      *
      * @return DOMNode|null
      */
-    public final function root(): DOMNode|null
+    public function root(): DOMNode|null
     {
         return $this->firstChild ?? null;
     }
@@ -125,7 +125,7 @@ class DomDocument extends \DOMDocument
      * @return self
      * @throws froq\dom\DomException
      */
-    public final function loadSource(string $type, string $source, array $options = null): self
+    public function loadSource(string $type, string $source, array $options = null): self
     {
         $this->setType($type); // @important
 
@@ -208,7 +208,7 @@ class DomDocument extends \DOMDocument
      * @param  array|null $options
      * @return self
      */
-    public final function loadXmlSource(string $source, array $options = null): self
+    public function loadXmlSource(string $source, array $options = null): self
     {
         return $this->loadSource(Document::TYPE_XML, $source, $options);
     }
@@ -220,7 +220,7 @@ class DomDocument extends \DOMDocument
      * @param  array|null $options
      * @return self
      */
-    public final function loadHtmlSource(string $source, array $options = null): self
+    public function loadHtmlSource(string $source, array $options = null): self
     {
         return $this->loadSource(Document::TYPE_HTML, $source, $options);
     }
@@ -230,7 +230,7 @@ class DomDocument extends \DOMDocument
      *
      * @return DOMXPath
      */
-    public final function xpath(): DOMXPath
+    public function xpath(): DOMXPath
     {
         return new DOMXPath($this);
     }
@@ -243,7 +243,7 @@ class DomDocument extends \DOMDocument
      * @return froq\dom\DomElementList|froq\dom\DomNodeList|null
      * @throws froq\dom\DomException
      */
-    public final function query(string $query, DOMNode $root = null): DomElementList|DomNodeList|null
+    public function query(string $query, DOMNode $root = null): DomElementList|DomNodeList|null
     {
         $query = trim($query);
         $query || throw new DomException('Empty query');

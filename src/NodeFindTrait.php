@@ -27,7 +27,7 @@ trait NodeFindTrait
      * @param  DOMNode|null $root
      * @return DOMNode|null
      */
-    public final function find(string $query, DOMNode $root = null): DOMNode|null
+    public function find(string $query, DOMNode $root = null): DOMNode|null
     {
         $nodes = $this->executeQuery($query, $root);
 
@@ -41,7 +41,7 @@ trait NodeFindTrait
      * @param  DOMNode|null $root
      * @return froq\dom\DomNodeList|null
      */
-    public final function findAll(string $query, DOMNode $root = null): DomNodeList|null
+    public function findAll(string $query, DOMNode $root = null): DomNodeList|null
     {
         $nodes = $this->executeQuery($query, $root);
 
@@ -55,7 +55,7 @@ trait NodeFindTrait
      * @param  DOMNode|null $root
      * @return froq\dom\DomNodeList|null
      */
-    public final function findByTag(string $tag, DOMNode $root = null): DomNodeList|null
+    public function findByTag(string $tag, DOMNode $root = null): DomNodeList|null
     {
         return ($root === null) // Root needs (.) first in query.
              ? $this->findAll("//{$tag}")
@@ -68,7 +68,7 @@ trait NodeFindTrait
      * @param  string $id
      * @return DOMNode|null
      */
-    public final function findById(string $id): DOMNode|null
+    public function findById(string $id): DOMNode|null
     {
         return $this->find("//*[@id='{$id}']");
     }
@@ -79,7 +79,7 @@ trait NodeFindTrait
      * @param  string $name
      * @return DOMNode|null
      */
-    public final function findByName(string $name): DOMNode|null
+    public function findByName(string $name): DOMNode|null
     {
         return $this->find("//*[@name='{$name}']");
     }
@@ -91,7 +91,7 @@ trait NodeFindTrait
      * @param  DOMNode|null $root
      * @return froq\dom\DomNodeList|null
      */
-    public final function findByClass(string $class, DOMNode $root = null): DomNodeList|null
+    public function findByClass(string $class, DOMNode $root = null): DomNodeList|null
     {
         return ($root === null) // Root needs (.) first in query.
              ? $this->findAll("//*[contains(@class, '{$class}')]")
@@ -106,7 +106,7 @@ trait NodeFindTrait
      * @param  DOMNode|null $root
      * @return froq\dom\DomNodeList|null
      */
-    public final function findByAttribute(string $name, string $value = null, DOMNode $root = null): DomNodeList|null
+    public function findByAttribute(string $name, string $value = null, DOMNode $root = null): DomNodeList|null
     {
         if ($value === null) {
             return ($root === null) // Root needs (.) first in query.
