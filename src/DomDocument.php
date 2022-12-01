@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-dom
  */
-declare(strict_types=1);
-
 namespace froq\dom;
 
 use DOMNode, DOMXPath;
@@ -15,7 +13,7 @@ use DOMNode, DOMXPath;
  * nodes via `XPath` utilities.
  *
  * @package froq\dom
- * @object  froq\dom\DomDocument
+ * @class   froq\dom\DomDocument
  * @author  Kerem Güneş
  * @since   4.0
  */
@@ -23,10 +21,10 @@ class DomDocument extends \DOMDocument
 {
     use NodeTrait, NodeFindTrait;
 
-    /** @var string */
+    /** Type. */
     private string $type;
 
-    /** @var string|null */
+    /** Base URL. */
     private string|null $baseUrl;
 
     /**

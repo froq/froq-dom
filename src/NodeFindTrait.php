@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-dom
  */
-declare(strict_types=1);
-
 namespace froq\dom;
 
 use DOMNode;
@@ -13,7 +11,7 @@ use DOMNode;
  * A trait, provides some find utilities for `DomDocument` and `DomElement` classes.
  *
  * @package froq\dom
- * @object  froq\dom\NodeFindTrait
+ * @class   froq\dom\NodeFindTrait
  * @author  Kerem Güneş
  * @since   5.2
  * @internal

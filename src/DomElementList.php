@@ -1,17 +1,15 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-dom
  */
-declare(strict_types=1);
-
 namespace froq\dom;
 
 /**
  * A list class for collecting DOM elements.
  *
  * @package froq\dom
- * @object  froq\dom\DomElementList
+ * @class   froq\dom\DomElementList
  * @author  Kerem Güneş
  * @since   5.2
  */

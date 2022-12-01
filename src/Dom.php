@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-dom
  */
-declare(strict_types=1);
-
 namespace froq\dom;
 
 use DOMNode;
@@ -14,7 +12,7 @@ use DOMNode;
  * and contains a parser method for parsing XML documents and other some utility methods.
  *
  * @package froq\dom
- * @object  froq\dom\Dom
+ * @class   froq\dom\Dom
  * @author  Kerem Güneş
  * @since   3.0
  * @static
