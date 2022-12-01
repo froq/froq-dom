@@ -36,7 +36,9 @@ class Document implements \Stringable
         $this->setData($data ?? []);
     }
 
-    /** @magic */
+    /**
+     * @magic
+     */
     public function __toString(): string
     {
         return $this->toString();
