@@ -65,14 +65,14 @@ trait NodeTrait
         $html = '';
 
         if ($outer) {
-            $html = ($docType == Document::TYPE_XML)
+            $html = ($docType === Document::TYPE_XML)
                 ? $doc->saveXml($this) : $doc->saveHtml($this);
         } else {
             foreach ($this->childNodes as $node){
-                if ($node->nodeType == XML_TEXT_NODE) {
+                if ($node->nodeType === XML_TEXT_NODE) {
                     $html .= $node->textContent;
-                } elseif ($node->nodeType == XML_ELEMENT_NODE) {
-                    $html .= ($docType == Document::TYPE_XML)
+                } elseif ($node->nodeType === XML_ELEMENT_NODE) {
+                    $html .= ($docType === Document::TYPE_XML)
                         ? $doc->saveXml($node) : $doc->saveHtml($node);
                 }
             }
@@ -92,10 +92,13 @@ trait NodeTrait
      */
     public function attribute(string $name, bool $useBaseUrl = false): string|null
     {
-        // Prevent returning "" from non-exist attributes.
-        $value = $this->getAttribute($name);
+        $value = (string) $this->getAttribute($name);
 
-        if ($value != '' && $useBaseUrl) {
+        if ($value === '') {
+            return null;
+        }
+
+        if ($useBaseUrl) {
             static $tags = ['a', 'img', 'link', 'iframe', 'audio', 'video', 'area',
                 'track', 'embed', 'source', 'area', 'object'];
 
@@ -104,7 +107,7 @@ trait NodeTrait
                 $baseUrlParts = parse_url($baseUrl);
 
                 if (isset($baseUrlParts['scheme'], $baseUrlParts['host'])) {
-                    $value = ($value[0] == '/') // Use root for links that starts with "/".
+                    $value = ($value[0] === '/') // Use root for links that starts with "/".
                         ? $baseUrlParts['scheme'] .'://'. $baseUrlParts['host'] . $value
                         : $baseUrl . $value;
                 }
@@ -134,7 +137,7 @@ trait NodeTrait
         switch ($this->tag()) {
             case 'input':
                 $type = $this->getAttribute('type');
-                if ($type == 'radio' || $type == 'checkbox') {
+                if ($type === 'radio' || $type === 'checkbox') {
                     return $this->hasAttribute('checked')
                          ? $this->getAttribute('value') : null;
                 }
@@ -170,7 +173,7 @@ trait NodeTrait
         $prev = $this->previousSibling;
 
         while ($prev) {
-            if ($prev->nodeType == XML_ELEMENT_NODE) {
+            if ($prev->nodeType === XML_ELEMENT_NODE) {
                 return $prev;
             }
             $prev = $prev->previousSibling;
@@ -190,7 +193,7 @@ trait NodeTrait
         $prevs = [];
 
         while ($prev) {
-            if ($prev->nodeType == XML_ELEMENT_NODE) {
+            if ($prev->nodeType === XML_ELEMENT_NODE) {
                 $prevs[] = $prev;
             }
             $prev = $prev->previousSibling;
@@ -209,7 +212,7 @@ trait NodeTrait
         $next = $this->nextSibling;
 
         while ($next) {
-            if ($next->nodeType == XML_ELEMENT_NODE) {
+            if ($next->nodeType === XML_ELEMENT_NODE) {
                 return $next;
             }
             $next = $next->nextSibling;
@@ -229,7 +232,7 @@ trait NodeTrait
         $nexts = [];
 
         while ($next) {
-            if ($next->nodeType == XML_ELEMENT_NODE) {
+            if ($next->nodeType === XML_ELEMENT_NODE) {
                 $nexts[] = $next;
             }
             $next = $next->nextSibling;
@@ -260,7 +263,7 @@ trait NodeTrait
         $children = [];
 
         while ($child) {
-            if ($child->nodeType == XML_ELEMENT_NODE) {
+            if ($child->nodeType === XML_ELEMENT_NODE) {
                 $children[] = $child;
             }
             $child = $child->nextSibling;
@@ -292,9 +295,9 @@ trait NodeTrait
         $i = 0;
 
         while ($parent) {
-            if ($parent->nodeType == XML_ELEMENT_NODE ||
-                $parent->nodeType == XML_DOCUMENT_NODE ||
-                $parent->nodeType == XML_HTML_DOCUMENT_NODE) {
+            if ($parent->nodeType === XML_ELEMENT_NODE ||
+                $parent->nodeType === XML_DOCUMENT_NODE ||
+                $parent->nodeType === XML_HTML_DOCUMENT_NODE) {
                 $parents[] = $parent;
             }
             $parent = $parent->parentNode;

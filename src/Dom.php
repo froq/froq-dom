@@ -65,7 +65,7 @@ class Dom extends \StaticClass
 
         $ret = [];
 
-        if ($root->nodeType == XML_DOCUMENT_NODE) {
+        if ($root->nodeType === XML_DOCUMENT_NODE) {
             // Add real root tag, not #document.
             $ret['@xml']['@root']    = $root->firstChild->nodeName ?? null;
             $ret['@xml']['version']  = $root->version;
@@ -81,11 +81,11 @@ class Dom extends \StaticClass
 
         if ($root->hasChildNodes()) {
             $nodes = $root->childNodes;
-            if ($nodes->length == 1) {
+            if ($nodes->length === 1) {
                 $node = $nodes->item(0);
-                if ($node->nodeType == XML_TEXT_NODE) {
+                if ($node->nodeType === XML_TEXT_NODE) {
                     $ret['@value'] = $node->nodeValue;
-                    return count($ret) == 1 ? $ret['@value'] : $ret;
+                    return count($ret) === 1 ? $ret['@value'] : $ret;
                 }
             }
 
@@ -95,7 +95,7 @@ class Dom extends \StaticClass
                 if (!isset($ret[$nodeName])) {
                     $ret[$nodeName] = self::parseXml($node, $options);
                     // Single node.
-                    if ($ret[$nodeName] == []) {
+                    if ($ret[$nodeName] === []) {
                         $ret[$nodeName] = null;
                     }
                 } else {
@@ -107,7 +107,7 @@ class Dom extends \StaticClass
                     $ret[$nodeName][] = self::parseXml($node, $options);
                 }
             }
-        } elseif ($root->nodeType == XML_COMMENT_NODE) {
+        } elseif ($root->nodeType === XML_COMMENT_NODE) {
             $ret = $root->nodeValue;
         }
 
@@ -130,7 +130,7 @@ class Dom extends \StaticClass
      */
     public static function isElementNode(DOMNode|null $node): bool
     {
-        return ($node && $node->nodeType == XML_ELEMENT_NODE);
+        return ($node && $node->nodeType === XML_ELEMENT_NODE);
     }
 
     /**
@@ -142,7 +142,7 @@ class Dom extends \StaticClass
      */
     public static function isDocumentNode(DOMNode|null $node): bool
     {
-        return ($node && $node->nodeType == XML_DOCUMENT_NODE);
+        return ($node && $node->nodeType === XML_DOCUMENT_NODE);
     }
 
     /**
@@ -154,6 +154,6 @@ class Dom extends \StaticClass
      */
     public static function isHtmlDocumentNode(DOMNode|null $node): bool
     {
-        return ($node && $node->nodeType == XML_HTML_DOCUMENT_NODE);
+        return ($node && $node->nodeType === XML_HTML_DOCUMENT_NODE);
     }
 }

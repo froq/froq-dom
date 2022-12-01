@@ -58,7 +58,7 @@ class DomDocument extends \DOMDocument
     {
         $type = strtolower($type);
 
-        if ($type != Document::TYPE_XML && $type != Document::TYPE_HTML) {
+        if ($type !== Document::TYPE_XML && $type !== Document::TYPE_HTML) {
             throw new DomException('Invalid type %s [valids: xml, html]', $type);
         }
 
@@ -86,10 +86,7 @@ class DomDocument extends \DOMDocument
      */
     public function setBaseUrl(string $baseUrl): self
     {
-        $baseUrl = self::prepareUrl($baseUrl);
-        $baseUrl || throw new DomException('Invalid URL');
-
-        $this->baseUrl = $baseUrl;
+        $this->baseUrl = self::prepareUrl($baseUrl) ?? throw new DomException('Invalid URL');
 
         return $this;
     }
@@ -128,7 +125,7 @@ class DomDocument extends \DOMDocument
         $this->setType($type); // @important
 
         // HTML is more quiet.
-        if ($type == Document::TYPE_HTML) {
+        if ($type === Document::TYPE_HTML) {
             $options['throwErrors'] ??= false;
         }
 
@@ -153,9 +150,9 @@ class DomDocument extends \DOMDocument
         libxml_use_internal_errors(true);
 
         $source = trim($source);
-        if ($type == Document::TYPE_XML) {
+        if ($type === Document::TYPE_XML) {
             parent::loadXml($source, $flags);
-        } elseif ($type == Document::TYPE_HTML) {
+        } elseif ($type === Document::TYPE_HTML) {
             // Workaround for a proper encoding.
             if (!str_starts_with($source, '<?xml')) {
                 $source = '<?xml' . $source;
@@ -182,10 +179,7 @@ class DomDocument extends \DOMDocument
 
         // Set base URL.
         if (isset($options['baseUrl'])) {
-            $baseUrl = self::prepareUrl($options['baseUrl']);
-            $baseUrl || throw new DomException('Invalid URL');
-
-            $this->baseUrl = $baseUrl;
+            $this->baseUrl = self::prepareUrl($options['baseUrl']) ?? throw new DomException('Invalid URL');
         } elseif ($base = $this->getBaseUrl()) {
             // May be set by setBaseUrl().
             $this->baseUrl = $base;
@@ -243,8 +237,7 @@ class DomDocument extends \DOMDocument
      */
     public function query(string $query, DOMNode $root = null): DomElementList|DomNodeList|null
     {
-        $query = trim($query);
-        $query || throw new DomException('Empty query');
+        $query = trim($query) ?: throw new DomException('Empty query');
 
         /** @var DOMNodeList|false */
         $nodes = $this->xpath()->query($query, $root);
@@ -275,7 +268,7 @@ class DomDocument extends \DOMDocument
         }
 
         // Ensure scheme.
-        if (empty($match['scheme']) || $match['scheme'] == '//') {
+        if (empty($match['scheme']) || $match['scheme'] === '//') {
             $match['scheme'] = 'http://';
         }
 

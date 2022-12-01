@@ -53,7 +53,7 @@ class Document implements \Stringable
      */
     public function setType(string $type): self
     {
-        if ($type != self::TYPE_XML && $type != self::TYPE_HTML) {
+        if ($type !== self::TYPE_XML && $type !== self::TYPE_HTML) {
             throw new DomException('Invalid type %s [valids: xml, html]', $type);
         }
 
@@ -120,9 +120,9 @@ class Document implements \Stringable
 
         $ret = '';
 
-        if ($this->type == self::TYPE_HTML) {
+        if ($this->type === self::TYPE_HTML) {
             $ret = '<!DOCTYPE html>';
-        } elseif ($this->type == self::TYPE_XML) {
+        } elseif ($this->type === self::TYPE_XML) {
             $ret = sprintf('<?xml version="%s" encoding="%s"?>', $this->version, $this->encoding);
         }
 
@@ -143,7 +143,7 @@ class Document implements \Stringable
         $ret .= "<{$rootName}";
 
         // Add attributes.
-        if ($attributes != null) {
+        if ($attributes) {
             $ret .= $this->generateAttributeString($attributes);
         }
 
@@ -159,14 +159,14 @@ class Document implements \Stringable
                 $rootContent = str_replace(['<', '>'], ['&lt;', '&gt;'], trim($rootContent, '"'));
 
                 $ret .= $newLine . $indentString . $rootContent;
-                if ($nodes == null) {
+                if (!$nodes) {
                     $ret .= $newLine;
                 }
             }
 
             // Add nodes.
-            if ($nodes != null) {
-                if ($newLine == '') {
+            if ($nodes) {
+                if ($newLine === '') {
                     foreach ($nodes as $node) {
                         $ret .= $this->generateNodeString($node, '', '', 0);
                     }
@@ -202,7 +202,7 @@ class Document implements \Stringable
         $ret = "<{$name}";
 
         // Add attributes.
-        if ($attributes != null) {
+        if ($attributes) {
             $ret .= $this->generateAttributeString($attributes);
         }
 
@@ -217,15 +217,15 @@ class Document implements \Stringable
                 // Escape (<,>).
                 $content = str_replace(['<', '>'], ['&lt;', '&gt;'], trim($content, '"'));
 
-                if ($nodes == null) {
+                if (!$nodes) {
                     $ret .= $content;
                 } else {
                     $ret .= $newLine . str_repeat($indentString, $indentLevel + 1) . $content;
                 }
             }
 
-            if ($nodes != null) {
-                if ($newLine != null) {
+            if ($nodes) {
+                if ($newLine !== '') {
                     $ret .= $newLine;
                     ++$indentLevel;
                     foreach ($nodes as $node) {
@@ -239,7 +239,7 @@ class Document implements \Stringable
                 }
             }
 
-            if ($nodes != null && $newLine != null) {
+            if ($nodes && $newLine !== '') {
                 $ret .= str_repeat($indentString, --$indentLevel);
             }
 
