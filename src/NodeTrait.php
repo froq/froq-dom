@@ -349,7 +349,9 @@ trait NodeTrait
         return null;
     }
 
-    /** @override */
+    /**
+     * @override
+     */
     public function setAttribute(string $name, string|null $value): void
     {
         if ($value !== null) {
@@ -359,7 +361,10 @@ trait NodeTrait
         }
     }
 
-    /** @override */ #[\ReturnTypeWillChange]
+    /**
+     * @override
+     */
+    #[\ReturnTypeWillChange]
     public function getAttribute(string $name): string|null
     {
         // Prevent returning "" from non-exist attributes.
