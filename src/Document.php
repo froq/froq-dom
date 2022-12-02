@@ -54,7 +54,7 @@ class Document implements \Stringable
     public function setType(string $type): self
     {
         if ($type !== self::TYPE_XML && $type !== self::TYPE_HTML) {
-            throw new DomException('Invalid type %s [valids: xml, html]', $type);
+            throw DomException::forInvalidType($type);
         }
 
         $this->type = $type;
@@ -129,11 +129,11 @@ class Document implements \Stringable
         $ret .= $newLine;
 
         $root = (array) ($this->data['@root'] ?? null);
-        $root || throw new DomException('Invalid document data, no @root field in given data');
+        $root || throw DomException::forInvalidDocumentData('field');
 
         // Eg: [name, content?, @nodes?, @attributes?, @selfClosing?].
         [$rootName, $rootContent] = array_select($root, [0, 1]);
-        $rootName || throw new DomException('Invalid document data, no @root tag field in given data');
+        $rootName || throw DomException::forInvalidDocumentData('tag field');
 
         $nodes       = $root['@nodes']       ?? null;
         $attributes  = $root['@attributes']  ?? null;
@@ -268,17 +268,9 @@ class Document implements \Stringable
             $name = (string) $name;
 
             if (strpbrk($name, $notAllowedChars) !== false) {
-                throw new DomException(
-                    'Invalid attribute name %q given '.
-                    '[tip: don\'t use these characters %q in name]',
-                    [$name, $notAllowedChars]
-                );
+                throw DomException::forAttrNotAllowedChars($name, $notAllowedChars);
             } elseif (!preg_test($namePattern, $name)) {
-                throw new DomException(
-                    'Invalid attribute name %q given '.
-                    '[tip: use a name that matches with %q',
-                    [$name, $namePattern]
-                );
+                throw DomException::forAttrUnmatchedNamePattern($name, $namePattern);
             }
 
             $value = json_encode($value, JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION);

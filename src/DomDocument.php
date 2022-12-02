@@ -59,7 +59,7 @@ class DomDocument extends \DOMDocument
         $type = strtolower($type);
 
         if ($type !== Document::TYPE_XML && $type !== Document::TYPE_HTML) {
-            throw new DomException('Invalid type %s [valids: xml, html]', $type);
+            throw DomException::forInvalidType($type);
         }
 
         $this->type = $type;
@@ -86,7 +86,8 @@ class DomDocument extends \DOMDocument
      */
     public function setBaseUrl(string $baseUrl): self
     {
-        $this->baseUrl = self::prepareUrl($baseUrl) ?? throw new DomException('Invalid URL');
+        $this->baseUrl = self::prepareUrl($baseUrl)
+            ?: throw DomException::forInvalidUrl($baseUrl);
 
         return $this;
     }
@@ -169,17 +170,14 @@ class DomDocument extends \DOMDocument
             $error->message = trim($error->message);
 
             if ($options['throwErrors']) {
-                throw new DomException(
-                    'Parse error: %s (level: %s code: %s column: %s file: %s line: %s)',
-                    [$error->message, $error->level, $error->code, $error->column, $error->file, $error->line],
-                    code: $error->code
-                );
+                throw DomException::forParseError($error);
             }
         }
 
         // Set base URL.
         if (isset($options['baseUrl'])) {
-            $this->baseUrl = self::prepareUrl($options['baseUrl']) ?? throw new DomException('Invalid URL');
+            $this->baseUrl = self::prepareUrl($options['baseUrl'])
+                ?: throw DomException::forInvalidUrl($options['baseUrl']);
         } elseif ($base = $this->getBaseUrl()) {
             // May be set by setBaseUrl().
             $this->baseUrl = $base;
@@ -237,13 +235,13 @@ class DomDocument extends \DOMDocument
      */
     public function query(string $query, DOMNode $root = null): DomElementList|DomNodeList|null
     {
-        $query = trim($query) ?: throw new DomException('Empty query');
+        $query = trim($query) ?: throw DomException::forEmptyQuery();
 
         /** @var DOMNodeList|false */
         $nodes = $this->xpath()->query($query, $root);
 
         if ($nodes === false) {
-            throw new DomException('Malformed query');
+            throw DomException::forMalformedQuery();
         }
 
         if ($nodes->length > 0) {
