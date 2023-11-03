@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-dom
  */
-declare(strict_types=1);
-
 namespace froq\dom;
 
 use DOMNode, DOMXPath;
@@ -15,7 +13,7 @@ use DOMNode, DOMXPath;
  * nodes via `XPath` utilities.
  *
  * @package froq\dom
- * @object  froq\dom\DomDocument
+ * @class   froq\dom\DomDocument
  * @author  Kerem Güneş
  * @since   4.0
  */
@@ -23,10 +21,10 @@ class DomDocument extends \DOMDocument
 {
     use NodeTrait, NodeFindTrait;
 
-    /** @var string */
+    /** Type. */
     private string $type;
 
-    /** @var string|null */
+    /** Base URL. */
     private string|null $baseUrl;
 
     /**
@@ -56,12 +54,12 @@ class DomDocument extends \DOMDocument
      * @return self
      * @throws froq\dom\DomException
      */
-    public final function setType(string $type): self
+    public function setType(string $type): self
     {
         $type = strtolower($type);
 
-        if ($type != Document::TYPE_XML && $type != Document::TYPE_HTML) {
-            throw new DomException('Invalid type %s [valids: xml, html]', $type);
+        if ($type !== Document::TYPE_XML && $type !== Document::TYPE_HTML) {
+            throw DomException::forInvalidType($type);
         }
 
         $this->type = $type;
@@ -74,7 +72,7 @@ class DomDocument extends \DOMDocument
      *
      * @return string|null
      */
-    public final function getType(): string|null
+    public function getType(): string|null
     {
         return $this->type ?? null;
     }
@@ -86,12 +84,10 @@ class DomDocument extends \DOMDocument
      * @return self
      * @throws froq\dom\DomException
      */
-    public final function setBaseUrl(string $baseUrl): self
+    public function setBaseUrl(string $baseUrl): self
     {
-        $baseUrl = self::prepareUrl($baseUrl);
-        $baseUrl || throw new DomException('Invalid URL');
-
-        $this->baseUrl = $baseUrl;
+        $this->baseUrl = self::prepareUrl($baseUrl)
+            ?: throw DomException::forInvalidUrl($baseUrl);
 
         return $this;
     }
@@ -101,7 +97,7 @@ class DomDocument extends \DOMDocument
      *
      * @return string|null
      */
-    public final function getBaseUrl(): string|null
+    public function getBaseUrl(): string|null
     {
         return $this->baseUrl ?? null;
     }
@@ -111,7 +107,7 @@ class DomDocument extends \DOMDocument
      *
      * @return DOMNode|null
      */
-    public final function root(): DOMNode|null
+    public function root(): DOMNode|null
     {
         return $this->firstChild ?? null;
     }
@@ -125,12 +121,12 @@ class DomDocument extends \DOMDocument
      * @return self
      * @throws froq\dom\DomException
      */
-    public final function loadSource(string $type, string $source, array $options = null): self
+    public function loadSource(string $type, string $source, array $options = null): self
     {
         $this->setType($type); // @important
 
         // HTML is more quiet.
-        if ($type == Document::TYPE_HTML) {
+        if ($type === Document::TYPE_HTML) {
             $options['throwErrors'] ??= false;
         }
 
@@ -155,9 +151,9 @@ class DomDocument extends \DOMDocument
         libxml_use_internal_errors(true);
 
         $source = trim($source);
-        if ($type == Document::TYPE_XML) {
+        if ($type === Document::TYPE_XML) {
             parent::loadXml($source, $flags);
-        } elseif ($type == Document::TYPE_HTML) {
+        } elseif ($type === Document::TYPE_HTML) {
             // Workaround for a proper encoding.
             if (!str_starts_with($source, '<?xml')) {
                 $source = '<?xml' . $source;
@@ -174,20 +170,14 @@ class DomDocument extends \DOMDocument
             $error->message = trim($error->message);
 
             if ($options['throwErrors']) {
-                throw new DomException(
-                    'Parse error: %s (level: %s code: %s column: %s file: %s line: %s)',
-                    [$error->message, $error->level, $error->code, $error->column, $error->file, $error->line],
-                    code: $error->code
-                );
+                throw DomException::forParseError($error);
             }
         }
 
         // Set base URL.
         if (isset($options['baseUrl'])) {
-            $baseUrl = self::prepareUrl($options['baseUrl']);
-            $baseUrl || throw new DomException('Invalid URL');
-
-            $this->baseUrl = $baseUrl;
+            $this->baseUrl = self::prepareUrl($options['baseUrl'])
+                ?: throw DomException::forInvalidUrl($options['baseUrl']);
         } elseif ($base = $this->getBaseUrl()) {
             // May be set by setBaseUrl().
             $this->baseUrl = $base;
@@ -208,7 +198,7 @@ class DomDocument extends \DOMDocument
      * @param  array|null $options
      * @return self
      */
-    public final function loadXmlSource(string $source, array $options = null): self
+    public function loadXmlSource(string $source, array $options = null): self
     {
         return $this->loadSource(Document::TYPE_XML, $source, $options);
     }
@@ -220,7 +210,7 @@ class DomDocument extends \DOMDocument
      * @param  array|null $options
      * @return self
      */
-    public final function loadHtmlSource(string $source, array $options = null): self
+    public function loadHtmlSource(string $source, array $options = null): self
     {
         return $this->loadSource(Document::TYPE_HTML, $source, $options);
     }
@@ -230,7 +220,7 @@ class DomDocument extends \DOMDocument
      *
      * @return DOMXPath
      */
-    public final function xpath(): DOMXPath
+    public function xpath(): DOMXPath
     {
         return new DOMXPath($this);
     }
@@ -243,16 +233,15 @@ class DomDocument extends \DOMDocument
      * @return froq\dom\DomElementList|froq\dom\DomNodeList|null
      * @throws froq\dom\DomException
      */
-    public final function query(string $query, DOMNode $root = null): DomElementList|DomNodeList|null
+    public function query(string $query, DOMNode $root = null): DomElementList|DomNodeList|null
     {
-        $query = trim($query);
-        $query || throw new DomException('Empty query');
+        $query = trim($query) ?: throw DomException::forEmptyQuery();
 
         /** @var DOMNodeList|false */
         $nodes = $this->xpath()->query($query, $root);
 
         if ($nodes === false) {
-            throw new DomException('Malformed query');
+            throw DomException::forMalformedQuery();
         }
 
         if ($nodes->length > 0) {
@@ -277,7 +266,7 @@ class DomDocument extends \DOMDocument
         }
 
         // Ensure scheme.
-        if (empty($match['scheme']) || $match['scheme'] == '//') {
+        if (empty($match['scheme']) || $match['scheme'] === '//') {
             $match['scheme'] = 'http://';
         }
 

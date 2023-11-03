@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-dom
  */
-declare(strict_types=1);
-
 namespace froq\dom;
 
 use DOMNode;
@@ -14,12 +12,12 @@ use DOMNode;
  * and contains a parser method for parsing XML documents and other some utility methods.
  *
  * @package froq\dom
- * @object  froq\dom\Dom
+ * @class   froq\dom\Dom
  * @author  Kerem Güneş
  * @since   3.0
  * @static
  */
-final class Dom extends \StaticClass
+class Dom extends \StaticClass
 {
     /**
      * Create an XML document.
@@ -67,7 +65,7 @@ final class Dom extends \StaticClass
 
         $ret = [];
 
-        if ($root->nodeType == XML_DOCUMENT_NODE) {
+        if ($root->nodeType === XML_DOCUMENT_NODE) {
             // Add real root tag, not #document.
             $ret['@xml']['@root']    = $root->firstChild->nodeName ?? null;
             $ret['@xml']['version']  = $root->version;
@@ -83,11 +81,11 @@ final class Dom extends \StaticClass
 
         if ($root->hasChildNodes()) {
             $nodes = $root->childNodes;
-            if ($nodes->length == 1) {
+            if ($nodes->length === 1) {
                 $node = $nodes->item(0);
-                if ($node->nodeType == XML_TEXT_NODE) {
+                if ($node->nodeType === XML_TEXT_NODE) {
                     $ret['@value'] = $node->nodeValue;
-                    return count($ret) == 1 ? $ret['@value'] : $ret;
+                    return count($ret) === 1 ? $ret['@value'] : $ret;
                 }
             }
 
@@ -97,7 +95,7 @@ final class Dom extends \StaticClass
                 if (!isset($ret[$nodeName])) {
                     $ret[$nodeName] = self::parseXml($node, $options);
                     // Single node.
-                    if ($ret[$nodeName] == []) {
+                    if ($ret[$nodeName] === []) {
                         $ret[$nodeName] = null;
                     }
                 } else {
@@ -109,7 +107,7 @@ final class Dom extends \StaticClass
                     $ret[$nodeName][] = self::parseXml($node, $options);
                 }
             }
-        } elseif ($root->nodeType == XML_COMMENT_NODE) {
+        } elseif ($root->nodeType === XML_COMMENT_NODE) {
             $ret = $root->nodeValue;
         }
 
@@ -132,7 +130,7 @@ final class Dom extends \StaticClass
      */
     public static function isElementNode(DOMNode|null $node): bool
     {
-        return ($node && $node->nodeType == XML_ELEMENT_NODE);
+        return ($node && $node->nodeType === XML_ELEMENT_NODE);
     }
 
     /**
@@ -144,7 +142,7 @@ final class Dom extends \StaticClass
      */
     public static function isDocumentNode(DOMNode|null $node): bool
     {
-        return ($node && $node->nodeType == XML_DOCUMENT_NODE);
+        return ($node && $node->nodeType === XML_DOCUMENT_NODE);
     }
 
     /**
@@ -156,6 +154,6 @@ final class Dom extends \StaticClass
      */
     public static function isHtmlDocumentNode(DOMNode|null $node): bool
     {
-        return ($node && $node->nodeType == XML_HTML_DOCUMENT_NODE);
+        return ($node && $node->nodeType === XML_HTML_DOCUMENT_NODE);
     }
 }

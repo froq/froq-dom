@@ -1,32 +1,27 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-dom
  */
-declare(strict_types=1);
-
 namespace froq\dom;
 
 /**
  * A base class for `XmlDocument` and `HtmlDocument` classes.
  *
  * @package froq\dom
- * @object  froq\dom\Document
+ * @class   froq\dom\Document
  * @author  Kerem Güneş
  * @since   3.0
  */
 class Document implements \Stringable
 {
-    /**
-     * Types.
-     * @const string
-     */
-    public final const TYPE_XML = 'xml', TYPE_HTML = 'html';
+    /** Types. */
+    public const TYPE_XML = 'xml', TYPE_HTML = 'html';
 
-    /** @var string */
+    /** Document type. */
     protected string $type;
 
-    /** @var array */
+    /** Document data. */
     protected array $data;
 
     /**
@@ -41,7 +36,9 @@ class Document implements \Stringable
         $this->setData($data ?? []);
     }
 
-    /** @magic */
+    /**
+     * @magic
+     */
     public function __toString(): string
     {
         return $this->toString();
@@ -54,10 +51,10 @@ class Document implements \Stringable
      * @return self
      * @throws froq\dom\DomException
      */
-    public final function setType(string $type): self
+    public function setType(string $type): self
     {
-        if ($type != self::TYPE_XML && $type != self::TYPE_HTML) {
-            throw new DomException('Invalid type %s [valids: xml, html]', $type);
+        if ($type !== self::TYPE_XML && $type !== self::TYPE_HTML) {
+            throw DomException::forInvalidType($type);
         }
 
         $this->type = $type;
@@ -70,7 +67,7 @@ class Document implements \Stringable
      *
      * @return string
      */
-    public final function getType(): string
+    public function getType(): string
     {
         return $this->type;
     }
@@ -81,7 +78,7 @@ class Document implements \Stringable
      * @param  array $data
      * @return self
      */
-    public final function setData(array $data): self
+    public function setData(array $data): self
     {
         $this->data = $data;
 
@@ -93,7 +90,7 @@ class Document implements \Stringable
      *
      * @return array
      */
-    public final function getData(): array
+    public function getData(): array
     {
         return $this->data;
     }
@@ -105,7 +102,7 @@ class Document implements \Stringable
      * @return string
      * @throws froq\dom\DomException
      */
-    public final function toString(array $options = null): string
+    public function toString(array $options = null): string
     {
         static $optionsDefault = [
             'indent' => false, 'indentString' => '  ',
@@ -123,20 +120,20 @@ class Document implements \Stringable
 
         $ret = '';
 
-        if ($this->type == self::TYPE_HTML) {
+        if ($this->type === self::TYPE_HTML) {
             $ret = '<!DOCTYPE html>';
-        } elseif ($this->type == self::TYPE_XML) {
+        } elseif ($this->type === self::TYPE_XML) {
             $ret = sprintf('<?xml version="%s" encoding="%s"?>', $this->version, $this->encoding);
         }
 
         $ret .= $newLine;
 
         $root = (array) ($this->data['@root'] ?? null);
-        $root || throw new DomException('Invalid document data, no @root field in given data');
+        $root || throw DomException::forInvalidDocumentData('field');
 
         // Eg: [name, content?, @nodes?, @attributes?, @selfClosing?].
         [$rootName, $rootContent] = array_select($root, [0, 1]);
-        $rootName || throw new DomException('Invalid document data, no @root tag field in given data');
+        $rootName || throw DomException::forInvalidDocumentData('tag field');
 
         $nodes       = $root['@nodes']       ?? null;
         $attributes  = $root['@attributes']  ?? null;
@@ -146,7 +143,7 @@ class Document implements \Stringable
         $ret .= "<{$rootName}";
 
         // Add attributes.
-        if ($attributes != null) {
+        if ($attributes) {
             $ret .= $this->generateAttributeString($attributes);
         }
 
@@ -162,14 +159,14 @@ class Document implements \Stringable
                 $rootContent = str_replace(['<', '>'], ['&lt;', '&gt;'], trim($rootContent, '"'));
 
                 $ret .= $newLine . $indentString . $rootContent;
-                if ($nodes == null) {
+                if (!$nodes) {
                     $ret .= $newLine;
                 }
             }
 
             // Add nodes.
-            if ($nodes != null) {
-                if ($newLine == '') {
+            if ($nodes) {
+                if ($newLine === '') {
                     foreach ($nodes as $node) {
                         $ret .= $this->generateNodeString($node, '', '', 0);
                     }
@@ -205,7 +202,7 @@ class Document implements \Stringable
         $ret = "<{$name}";
 
         // Add attributes.
-        if ($attributes != null) {
+        if ($attributes) {
             $ret .= $this->generateAttributeString($attributes);
         }
 
@@ -220,15 +217,15 @@ class Document implements \Stringable
                 // Escape (<,>).
                 $content = str_replace(['<', '>'], ['&lt;', '&gt;'], trim($content, '"'));
 
-                if ($nodes == null) {
+                if (!$nodes) {
                     $ret .= $content;
                 } else {
                     $ret .= $newLine . str_repeat($indentString, $indentLevel + 1) . $content;
                 }
             }
 
-            if ($nodes != null) {
-                if ($newLine != null) {
+            if ($nodes) {
+                if ($newLine !== '') {
                     $ret .= $newLine;
                     ++$indentLevel;
                     foreach ($nodes as $node) {
@@ -242,7 +239,7 @@ class Document implements \Stringable
                 }
             }
 
-            if ($nodes != null && $newLine != null) {
+            if ($nodes && $newLine !== '') {
                 $ret .= str_repeat($indentString, --$indentLevel);
             }
 
@@ -271,17 +268,9 @@ class Document implements \Stringable
             $name = (string) $name;
 
             if (strpbrk($name, $notAllowedChars) !== false) {
-                throw new DomException(
-                    'Invalid attribute name `%s` given '.
-                    '[tip: don\'t use these characters `%s` in name]',
-                    [$name, $notAllowedChars]
-                );
+                throw DomException::forAttrNotAllowedChars($name, $notAllowedChars);
             } elseif (!preg_test($namePattern, $name)) {
-                throw new DomException(
-                    'Invalid attribute name `%s` given '.
-                    '[tip: use a name that matches with `%s`',
-                    [$name, $namePattern]
-                );
+                throw DomException::forAttrUnmatchedNamePattern($name, $namePattern);
             }
 
             $value = json_encode($value, JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION);
