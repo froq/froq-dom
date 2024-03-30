@@ -258,8 +258,8 @@ class DomDocument extends \DOMDocument
     private static function prepareUrl(string $url): string|null
     {
         preg_match('~^(?:(?<scheme>\w+://|//))?
-                      (?:(?<host>[\w\.\-]+\.\w{2,}))
-                      (?:(?<rest>/.*))?~x', $url, $match);
+                      (?:(?<host>[^:/]+))
+                      (?:(?<rest>.*))?~x', $url, $match);
 
         if (empty($match)) {
             return null;
