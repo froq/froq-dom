@@ -311,6 +311,27 @@ trait NodeTrait
     }
 
     /**
+     * Set content.
+     *
+     * @param  string $content
+     * @return void
+     */
+    public function setContent(string $content): void
+    {
+        $this->textContent = $content;
+    }
+
+    /**
+     * Get content.
+     *
+     * @return string
+     */
+    public function getContent(): string
+    {
+        return $this->textContent;
+    }
+
+    /**
      * Set given attribute map.
      *
      * @param  array $attributes
