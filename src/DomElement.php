@@ -15,7 +15,7 @@ namespace froq\dom;
  * @author  Kerem Güneş
  * @since   4.0
  */
-class DomElement extends \DOMElement
+class DomElement extends \DOMElement implements \Stringable
 {
     use NodeTrait, NodeFindTrait;
 

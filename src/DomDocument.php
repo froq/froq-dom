@@ -17,7 +17,7 @@ use DOMNode, DOMXPath;
  * @author  Kerem Güneş
  * @since   4.0
  */
-class DomDocument extends \DOMDocument
+class DomDocument extends \DOMDocument implements \Stringable
 {
     use NodeTrait, NodeFindTrait;
 

@@ -19,6 +19,14 @@ use DOMNode;
 trait NodeTrait
 {
     /**
+     * @magic
+     */
+    public function __toString(): string
+    {
+        return $this->textContent;
+    }
+
+    /**
      * Get node tag.
      *
      * @return string
