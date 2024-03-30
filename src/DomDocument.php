@@ -270,6 +270,6 @@ class DomDocument extends \DOMDocument
             $match['scheme'] = 'http://';
         }
 
-        return $match['scheme'] . $match['host'] . $match['rest'];
+        return $match['scheme'] . $match['host'] . ($match['rest'] ?? '');
     }
 }
