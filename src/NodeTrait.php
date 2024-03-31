@@ -49,46 +49,52 @@ trait NodeTrait
     /**
      * Get text contents.
      *
+     * @param  callable|null $apply
      * @return string|null
      */
-    public function text(): string|null
+    public function text(callable $apply = null): string|null
     {
-        $text = trim($this->textContent);
+        if ($apply) {
+            return $apply($this->textContent);
+        }
 
-        return ($text !== '') ? $text : null;
+        return $this->textContent;
     }
 
     /**
      * Get HTML contents.
      *
-     * @param  bool $outer
+     * @param  bool          $outer
+     * @param  callable|null $apply
      * @return string|null
      */
-    public function html(bool $outer = false): string|null
+    public function html(bool $outer = false, callable $apply = null): string|null
     {
         // Also a document ($this) may be given.
         $doc     = $this->ownerDocument ?? $this;
         $docType = $doc->getType();
 
-        $html = '';
-
         if ($outer) {
-            $html = ($docType === Document::TYPE_XML)
-                ? $doc->saveXml($this) : $doc->saveHtml($this);
+            $html = ($docType === DOMDocument::TYPE_XML)
+                ? $doc->saveXML($this) : $doc->saveHTML($this);
         } else {
+            $html = false;
+
             foreach ($this->childNodes as $node){
                 if ($node->nodeType === XML_TEXT_NODE) {
                     $html .= $node->textContent;
                 } elseif ($node->nodeType === XML_ELEMENT_NODE) {
                     $html .= ($docType === Document::TYPE_XML)
-                        ? $doc->saveXml($node) : $doc->saveHtml($node);
+                        ? $doc->saveXML($node) : $doc->saveHTML($node);
                 }
             }
         }
 
-        $html = trim($html);
+        if ($apply) {
+            return $apply($html);
+        }
 
-        return ($html !== '') ? $html : null;
+        return ($html !== false) ? $html : null;
     }
 
     /**
