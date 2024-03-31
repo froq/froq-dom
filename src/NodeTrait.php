@@ -92,20 +92,26 @@ trait NodeTrait
     }
 
     /**
-     * Set/get an attribute.
+     * Set/get an attribute, optionally apply given callable to old value.
      *
-     * @param  string      $name
-     * @param  string|null $value
+     * @param  string               $name
+     * @param  string|callable|null $value
      * @return string|null
      */
-    public function attr(string $name, string $value = null): string|null
+    public function attr(string $name, string|callable $value = null): string|null
     {
         if (func_num_args() === 1) {
             return $this->getAttribute($name);
         }
 
+        if (is_callable($value)) {
+            return $value($this->getAttribute($name));
+        }
+
+        $oldValue = $this->getAttribute($name);
         $this->setAttribute($name, $value);
-        return null;
+
+        return $oldValue;
     }
 
     /**
