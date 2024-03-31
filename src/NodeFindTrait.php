@@ -47,20 +47,6 @@ trait NodeFindTrait
     }
 
     /**
-     * Run a "find by tag" process return a DomNodeList or null if no matches.
-     *
-     * @param  string       $tag
-     * @param  DOMNode|null $root
-     * @return froq\dom\DomNodeList|null
-     */
-    public function findByTag(string $tag, DOMNode $root = null): DomNodeList|null
-    {
-        return ($root === null) // Root needs (.) first in query.
-             ? $this->findAll("//{$tag}")
-             : $this->findAll(".//{$tag}", $root);
-    }
-
-    /**
      * Run a "find by id" process return a DOMNode or null if no match.
      *
      * @param  string $id
@@ -83,15 +69,33 @@ trait NodeFindTrait
     }
 
     /**
-     * Run a "find by class" process return a DomNodeList or null if no matches.
+     * Run a "find by tag" process return a DomNodeList or null if no matches.
      *
-     * @param  string       $class
-     * @param  DOMNode|null $root
+     * @param  string            $tag
+     * @param  DOMNode|true|null $root
      * @return froq\dom\DomNodeList|null
      */
-    public function findByClass(string $class, DOMNode $root = null): DomNodeList|null
+    public function findByTag(string $tag, DOMNode|true $root = null): DomNodeList|null
     {
-        return ($root === null) // Root needs (.) first in query.
+        [$tag, $root, $rootOk] = $this->detectRoot($tag, $root);
+
+        return !$rootOk // Root needs "." in query.
+             ? $this->findAll("//{$tag}")
+             : $this->findAll(".//{$tag}", $root);
+    }
+
+    /**
+     * Run a "find by class" process return a DomNodeList or null if no matches.
+     *
+     * @param  string            $class
+     * @param  DOMNode|true|null $root
+     * @return froq\dom\DomNodeList|null
+     */
+    public function findByClass(string $class, DOMNode|true $root = null): DomNodeList|null
+    {
+        [$class, $root, $rootOk] = $this->detectRoot($class, $root);
+
+        return !$rootOk // Root needs "." in query.
              ? $this->findAll("//*[contains(@class, '{$class}')]")
              : $this->findAll(".//*[contains(@class, '{$class}')]", $root);
     }
@@ -99,21 +103,23 @@ trait NodeFindTrait
     /**
      * Run a "find by attribute" process return a DomNodeList or null if no matches.
      *
-     * @param  string       $name
-     * @param  string|null  $value
-     * @param  DOMNode|null $root
+     * @param  string            $name
+     * @param  string|null       $value
+     * @param  DOMNode|true|null $root
      * @return froq\dom\DomNodeList|null
      */
-    public function findByAttribute(string $name, string $value = null, DOMNode $root = null): DomNodeList|null
+    public function findByAttribute(string $name, string $value = null, DOMNode|true $root = null): DomNodeList|null
     {
+        [$name, $root, $rootOk] = $this->detectRoot($name, $root);
+
         if ($value === null) {
-            return ($root === null) // Root needs (.) first in query.
+            return !$rootOk // Root needs "." in query.
                  ? $this->findAll("//*[@{$name}]")
                  : $this->findAll(".//*[@{$name}]", $root);
         } else {
             $value = addcslashes($value, '"');
 
-            return ($root === null) // Root needs (.) first in query.
+            return !$rootOk // Root needs "." in query.
                  ? $this->findAll("//*[@{$name}='{$value}']")
                  : $this->findAll(".//*[@{$name}='{$value}']", $root);
         }
@@ -121,10 +127,6 @@ trait NodeFindTrait
 
     /**
      * Execute given XPath query for user DomDocument or DomElement.
-     *
-     * @param  string       $query
-     * @param  DOMNode|null $root
-     * @return DOMNode|DomNodeList|null
      */
     private function executeQuery(string $query, DOMNode $root = null): DOMNode|DomNodeList|null
     {
@@ -133,5 +135,23 @@ trait NodeFindTrait
         } elseif ($this instanceof DomElement) {
             return $this->ownerDocument->query($query, $this);
         }
+    }
+
+    /**
+     * Detect if root given or wanted.
+     */
+    private function detectRoot(string $query, DOMNode|true|null $root): array
+    {
+        $rootOk = false;
+
+        if ($root === true) {
+            $root = $this;
+            $rootOk = true;
+        }
+        if ($root instanceof DOMNode) {
+            $rootOk = true;
+        }
+
+        return [$query, $root, $rootOk];
     }
 }
