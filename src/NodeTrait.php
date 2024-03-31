@@ -94,11 +94,11 @@ trait NodeTrait
     /**
      * Get an attribute.
      *
-     * @param  string $name
-     * @param  bool   $useBaseUrl
+     * @param  string      $name
+     * @param  string|bool $baseUrl
      * @return string|null
      */
-    public function attribute(string $name, bool $useBaseUrl = false): string|null
+    public function attribute(string $name, string|bool $baseUrl = false): string|null
     {
         $value = (string) $this->getAttribute($name);
 
@@ -106,17 +106,21 @@ trait NodeTrait
             return null;
         }
 
-        if ($useBaseUrl) {
+        if ($baseUrl) {
             static $tags = ['a', 'img', 'link', 'iframe', 'audio', 'video', 'area',
                 'track', 'embed', 'source', 'area', 'object'];
 
             if (in_array($this->tag(), $tags, true)) {
-                $baseUrl = (string) $this->ownerDocument->getBaseUrl();
-                $baseUrlParts = parse_url($baseUrl);
+                // Use document url.
+                if ($baseUrl === true) {
+                    $baseUrl = (string) $this->ownerDocument->getBaseUrl();
+                }
 
-                if (isset($baseUrlParts['scheme'], $baseUrlParts['host'])) {
-                    $value = ($value[0] === '/') // Use root for links that starts with "/".
-                        ? $baseUrlParts['scheme'] .'://'. $baseUrlParts['host'] . $value
+                $url = http_parse_url($baseUrl);
+
+                if (isset($url['origin'])) {
+                    $value = ($value[0] === '/') // Use root for links starting with "/".
+                        ? $url['origin'] . $value
                         : $baseUrl . $value;
                 }
             }
@@ -132,7 +136,7 @@ trait NodeTrait
      */
     public function attributes(): array|null
     {
-        return $this->getAttributes();
+        return $this->getAttributes() ?: null;
     }
 
     /**
@@ -357,13 +361,14 @@ trait NodeTrait
      * Get attribute map, optionally by given names.
      *
      * @param  array|null $names
-     * @return array|null
+     * @return array
      * @since  5.4
      */
-    public function getAttributes(array $names = null): array|null
+    public function getAttributes(array $names = null): array
     {
+        $attributes = [];
+
         if ($this->hasAttributes()) {
-            $attributes = [];
             foreach ($this->attributes as $attribute) {
                 $attributes[$attribute->name] = $attribute->value;
             }
@@ -375,10 +380,9 @@ trait NodeTrait
                 );
             }
 
-            return $attributes;
         }
 
-        return null;
+        return $attributes;
     }
 
     /**
