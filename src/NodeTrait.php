@@ -92,7 +92,24 @@ trait NodeTrait
     }
 
     /**
-     * Get an attribute.
+     * Set/get an attribute.
+     *
+     * @param  string      $name
+     * @param  string|null $value
+     * @return string|null
+     */
+    public function attr(string $name, string $value = null): string|null
+    {
+        if (func_num_args() === 1) {
+            return $this->getAttribute($name);
+        }
+
+        $this->setAttribute($name, $value);
+        return null;
+    }
+
+    /**
+     * Get an attribute, optionally with given base URL.
      *
      * @param  string      $name
      * @param  string|bool $baseUrl
