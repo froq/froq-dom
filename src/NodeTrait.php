@@ -78,7 +78,7 @@ trait NodeTrait
             $html = ($docType === DOMDocument::TYPE_XML)
                 ? $doc->saveXML($this) : $doc->saveHTML($this);
         } else {
-            $html = false;
+            $html = '';
 
             foreach ($this->childNodes as $node){
                 if ($node->nodeType === XML_TEXT_NODE) {
